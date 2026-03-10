@@ -1,47 +1,40 @@
 installation:
   version: 6.0.4
-  installDate: 2026-03-10T11:07:50.412Z
-  lastUpdated: 2026-03-10T11:07:50.412Z
+  installDate: 2026-03-10T12:46:35.875Z
+  lastUpdated: 2026-03-10T12:46:35.875Z
 modules:
   - name: core
     version: 6.0.4
-    installDate: 2026-03-10T11:07:48.118Z
-    lastUpdated: 2026-03-10T11:07:48.118Z
+    installDate: 2026-03-10T12:46:34.377Z
+    lastUpdated: 2026-03-10T12:46:34.377Z
     source: built-in
     npmPackage: null
     repoUrl: null
   - name: bmm
     version: 6.0.4
-    installDate: 2026-03-10T11:07:28.734Z
-    lastUpdated: 2026-03-10T11:07:48.118Z
+    installDate: 2026-03-10T12:46:21.079Z
+    lastUpdated: 2026-03-10T12:46:34.377Z
     source: built-in
     npmPackage: null
     repoUrl: null
   - name: bmb
     version: 0.1.6
-    installDate: 2026-03-10T11:07:31.664Z
-    lastUpdated: 2026-03-10T11:07:48.692Z
+    installDate: 2026-03-10T12:46:23.825Z
+    lastUpdated: 2026-03-10T12:46:34.868Z
     source: external
     npmPackage: bmad-builder
     repoUrl: https://github.com/bmad-code-org/bmad-builder
   - name: cis
     version: 0.1.8
-    installDate: 2026-03-10T11:07:34.359Z
-    lastUpdated: 2026-03-10T11:07:49.279Z
+    installDate: 2026-03-10T12:46:26.343Z
+    lastUpdated: 2026-03-10T12:46:35.366Z
     source: external
     npmPackage: bmad-creative-intelligence-suite
     repoUrl: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
-  - name: gds
-    version: 0.1.10
-    installDate: 2026-03-10T11:07:37.440Z
-    lastUpdated: 2026-03-10T11:07:49.842Z
-    source: external
-    npmPackage: bmad-game-dev-studio
-    repoUrl: https://github.com/bmad-code-org/bmad-module-game-dev-studio.git
   - name: tea
     version: 1.5.3
-    installDate: 2026-03-10T11:07:40.827Z
-    lastUpdated: 2026-03-10T11:07:50.412Z
+    installDate: 2026-03-10T12:46:28.915Z
+    lastUpdated: 2026-03-10T12:46:35.875Z
     source: external
     npmPackage: bmad-method-test-architecture-enterprise
     repoUrl: https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise
