@@ -13,7 +13,7 @@ function validMemoryParams() {
 		lastAccessed: null,
 		significance: 0.5,
 		tags: ["test"],
-		linkedIds: [],
+		linkedIds: [] as string[],
 	};
 }
 
@@ -109,5 +109,96 @@ describe("Memory entity", () => {
 		params.id = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11";
 		const result = createMemoryEntity(params);
 		expect(result.ok).toBe(true);
+	});
+
+	test("rejects negative accessCount", () => {
+		const params = validMemoryParams();
+		params.accessCount = -1;
+		const result = createMemoryEntity(params);
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("accessCount");
+		}
+	});
+
+	test("rejects non-integer accessCount", () => {
+		const params = validMemoryParams();
+		params.accessCount = 2.5;
+		const result = createMemoryEntity(params);
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("accessCount");
+		}
+	});
+
+	test("accepts zero accessCount", () => {
+		const params = validMemoryParams();
+		params.accessCount = 0;
+		const result = createMemoryEntity(params);
+		expect(result.ok).toBe(true);
+	});
+
+	test("rejects invalid UUID in linkedIds", () => {
+		const params = validMemoryParams();
+		params.linkedIds = ["not-a-uuid"];
+		const result = createMemoryEntity(params);
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("linkedIds");
+		}
+	});
+
+	test("accepts valid UUIDs in linkedIds", () => {
+		const params = validMemoryParams();
+		params.linkedIds = [
+			"550e8400-e29b-41d4-a716-446655440001",
+			"550e8400-e29b-41d4-a716-446655440002",
+		];
+		const result = createMemoryEntity(params);
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			expect(result.value.linkedIds).toHaveLength(2);
+		}
+	});
+
+	test("accepts empty linkedIds", () => {
+		const params = validMemoryParams();
+		params.linkedIds = [];
+		const result = createMemoryEntity(params);
+		expect(result.ok).toBe(true);
+	});
+
+	test("defensively copies embedding array", () => {
+		const params = validMemoryParams();
+		const result = createMemoryEntity(params);
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			params.embedding[0] = 999;
+			expect(result.value.embedding[0]).not.toBe(999);
+		}
+	});
+
+	test("defensively copies tags array", () => {
+		const params = validMemoryParams();
+		const result = createMemoryEntity(params);
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			params.tags.push("mutated");
+			expect(result.value.tags).toEqual(["test"]);
+		}
+	});
+
+	test("defensively copies linkedIds array", () => {
+		const params = validMemoryParams();
+		params.linkedIds = ["550e8400-e29b-41d4-a716-446655440001"];
+		const result = createMemoryEntity(params);
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			params.linkedIds.push("550e8400-e29b-41d4-a716-446655440002");
+			expect(result.value.linkedIds).toHaveLength(1);
+		}
 	});
 });

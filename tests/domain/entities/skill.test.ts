@@ -19,4 +19,36 @@ describe("SkillEntity factory", () => {
 			expect(result.value.content).toBe("# Greet\nSay hello");
 		}
 	});
+
+	test("rejects empty name", () => {
+		const result = createSkillEntity({
+			name: "",
+			description: "Greeting skill",
+			type: SkillType.System,
+			path: "/skills/greet.md",
+			status: SkillStatus.Active,
+			content: "# Greet\nSay hello",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("name");
+		}
+	});
+
+	test("rejects empty path", () => {
+		const result = createSkillEntity({
+			name: "greet",
+			description: "Greeting skill",
+			type: SkillType.System,
+			path: "",
+			status: SkillStatus.Active,
+			content: "# Greet\nSay hello",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("path");
+		}
+	});
 });

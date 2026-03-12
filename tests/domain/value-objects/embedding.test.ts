@@ -54,4 +54,35 @@ describe("Embedding value object", () => {
 			expect(result.value.values[0]).toBe(1.0);
 		}
 	});
+
+	test("rejects array containing NaN", () => {
+		const values = Array.from({ length: 768 }, () => 0.5);
+		values[100] = Number.NaN;
+		const result = createEmbedding(values);
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("finite");
+		}
+	});
+
+	test("rejects array containing Infinity", () => {
+		const values = Array.from({ length: 768 }, () => 0.5);
+		values[0] = Number.POSITIVE_INFINITY;
+		const result = createEmbedding(values);
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+		}
+	});
+
+	test("rejects array containing -Infinity", () => {
+		const values = Array.from({ length: 768 }, () => 0.5);
+		values[767] = Number.NEGATIVE_INFINITY;
+		const result = createEmbedding(values);
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+		}
+	});
 });

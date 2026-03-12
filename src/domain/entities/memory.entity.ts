@@ -1,10 +1,9 @@
 import { ValidationError } from "../errors/domain.error.ts";
 import type { Memory, SourceType } from "../types/memory.type.ts";
 import type { Result } from "../types/result.type.ts";
+import { embeddingDimensions } from "../value-objects/embedding.value-object.ts";
 
 export type MemoryEntity = Memory;
-
-const embeddingDimensions = 768;
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export function createMemoryEntity(params: {
@@ -44,5 +43,31 @@ export function createMemoryEntity(params: {
 		};
 	}
 
-	return { ok: true, value: params };
+	if (!Number.isInteger(params.accessCount) || params.accessCount < 0) {
+		return {
+			ok: false,
+			error: new ValidationError(
+				`accessCount must be a non-negative integer, got ${params.accessCount}`,
+			),
+		};
+	}
+
+	for (const linkedId of params.linkedIds) {
+		if (!uuidPattern.test(linkedId)) {
+			return {
+				ok: false,
+				error: new ValidationError(`linkedIds must contain valid UUIDs, got "${linkedId}"`),
+			};
+		}
+	}
+
+	return {
+		ok: true,
+		value: {
+			...params,
+			embedding: [...params.embedding],
+			tags: [...params.tags],
+			linkedIds: [...params.linkedIds],
+		},
+	};
 }

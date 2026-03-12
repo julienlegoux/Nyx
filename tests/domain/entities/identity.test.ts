@@ -13,4 +13,39 @@ describe("IdentityEntity factory", () => {
 			expect(result.value.retrievalWeights.similarity).toBe(0.5);
 		}
 	});
+
+	test("rejects retrieval weights that don't sum to 1.0", () => {
+		const result = createIdentityEntity({
+			rawContent: "# Nyx",
+			retrievalWeights: { similarity: 0.5, significance: 0.5, recency: 0.5 },
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("sum to 1.0");
+		}
+	});
+
+	test("rejects negative retrieval weights", () => {
+		const result = createIdentityEntity({
+			rawContent: "# Nyx",
+			retrievalWeights: { similarity: -0.5, significance: 1.0, recency: 0.5 },
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("finite non-negative");
+		}
+	});
+
+	test("rejects NaN retrieval weight", () => {
+		const result = createIdentityEntity({
+			rawContent: "# Nyx",
+			retrievalWeights: { similarity: Number.NaN, significance: 0.5, recency: 0.5 },
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+		}
+	});
 });

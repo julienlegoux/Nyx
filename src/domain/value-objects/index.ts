@@ -1,6 +1,7 @@
 export {
 	type Embedding,
 	createEmbedding,
+	embeddingDimensions,
 } from "./embedding.value-object.ts";
 export {
 	type Significance,

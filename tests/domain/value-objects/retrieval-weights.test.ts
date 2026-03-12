@@ -45,7 +45,7 @@ describe("RetrievalWeights value object", () => {
 		expect(result.ok).toBe(false);
 		if (!result.ok) {
 			expect(result.error.code).toBe("VALIDATION_ERROR");
-			expect(result.error.message).toContain("non-negative");
+			expect(result.error.message).toContain("finite non-negative");
 		}
 	});
 

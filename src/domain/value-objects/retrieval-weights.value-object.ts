@@ -12,16 +12,16 @@ export function createRetrievalWeights(
 	recency: number,
 ): Result<RetrievalWeights> {
 	if (
-		Number.isNaN(similarity) ||
-		Number.isNaN(significance) ||
-		Number.isNaN(recency) ||
+		!Number.isFinite(similarity) ||
+		!Number.isFinite(significance) ||
+		!Number.isFinite(recency) ||
 		similarity < 0 ||
 		significance < 0 ||
 		recency < 0
 	) {
 		return {
 			ok: false,
-			error: new ValidationError("All retrieval weights must be non-negative numbers"),
+			error: new ValidationError("All retrieval weights must be finite non-negative numbers"),
 		};
 	}
 

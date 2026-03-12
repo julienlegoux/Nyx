@@ -24,4 +24,24 @@ describe("SessionEntity factory", () => {
 			expect(result.value.triggerContext).toBe("wake signal received");
 		}
 	});
+
+	test("rejects when type does not match config.type", () => {
+		const result = createSessionEntity({
+			type: SessionType.Consciousness,
+			config: {
+				type: SessionType.DaemonConsolidator,
+				model: "claude-sonnet-4-6",
+				systemPrompt: "You are Nyx",
+				tools: [],
+				maxTurns: null,
+			},
+			startedAt: new Date(),
+			triggerContext: "wake signal received",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("does not match");
+		}
+	});
 });

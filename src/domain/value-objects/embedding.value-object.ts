@@ -5,7 +5,7 @@ export interface Embedding {
 	readonly values: readonly number[];
 }
 
-const embeddingDimensions = 768;
+export const embeddingDimensions = 768;
 
 export function createEmbedding(values: number[]): Result<Embedding> {
 	if (values.length !== embeddingDimensions) {
@@ -15,6 +15,15 @@ export function createEmbedding(values: number[]): Result<Embedding> {
 				`Embedding must have exactly ${embeddingDimensions} dimensions, got ${values.length}`,
 			),
 		};
+	}
+
+	for (const v of values) {
+		if (!Number.isFinite(v)) {
+			return {
+				ok: false,
+				error: new ValidationError("Embedding values must be finite numbers (no NaN or Infinity)"),
+			};
+		}
 	}
 
 	return { ok: true, value: { values: [...values] } };

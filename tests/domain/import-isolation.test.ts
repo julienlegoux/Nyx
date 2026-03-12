@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync, readdirSync, statSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { join, relative, resolve } from "node:path";
 
 const domainDir = resolve(import.meta.dirname, "../../src/domain");
 
@@ -33,7 +33,7 @@ describe("Domain layer import isolation (AC6)", () => {
 	const tsFiles = getAllTsFiles(domainDir);
 
 	for (const file of tsFiles) {
-		const relativePath = file.replace(`${resolve(domainDir, "\\..")}\\`, "").replaceAll("\\", "/");
+		const relativePath = relative(resolve(domainDir, ".."), file).replaceAll("\\", "/");
 		test(`${relativePath} has no forbidden imports`, () => {
 			const content = readFileSync(file, "utf-8");
 			for (const pattern of forbiddenPatterns) {

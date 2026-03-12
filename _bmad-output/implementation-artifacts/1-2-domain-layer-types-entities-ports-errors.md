@@ -1,6 +1,6 @@
 # Story 1.2: Domain Layer — Types, Entities, Ports & Errors
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -111,7 +111,7 @@ so that all layers have a shared contract to implement against.
   - [x] 7.6 Verify no imports from application/infrastructure/entry in domain files
   - [x] 7.7 Run biome check and TypeScript typecheck
 
-### Review Follow-ups (AI)
+### Review Follow-ups — Round 1 (AI)
 
 - [x] [AI-Review][HIGH] NaN bypasses all numeric validation in value objects and entity factories — add `Number.isNaN()` guards [src/domain/value-objects/significance.value-object.ts:9] [src/domain/value-objects/retrieval-weights.value-object.ts:14] [src/domain/entities/memory.entity.ts:30]
 - [x] [AI-Review][HIGH] Dual `Significance` type naming collision — `types/memory.type.ts:8` defines `Significance = number`, `value-objects/significance.value-object.ts:4` defines `Significance = { readonly value: number }` — rename one to resolve ambiguity
@@ -120,6 +120,17 @@ so that all layers have a shared contract to implement against.
 - [x] [AI-Review][LOW] Add NaN/Infinity test cases for all value object factories and entity factories [tests/domain/value-objects/] [tests/domain/entities/]
 - [x] [AI-Review][LOW] Embedding value object doesn't defensively copy input array — caller retains mutable reference [src/domain/value-objects/embedding.value-object.ts:20]
 - [x] [AI-Review][LOW] MemoryEntity doesn't validate UUID format for `id` field [src/domain/entities/memory.entity.ts:9]
+
+### Review Follow-ups — Round 2 (AI)
+
+- [x] [AI-Review][HIGH] Embedding value object doesn't validate NaN/Infinity in individual element values — can corrupt vector similarity operations [src/domain/value-objects/embedding.value-object.ts:10]
+- [x] [AI-Review][MEDIUM] MemoryEntity doesn't validate `accessCount >= 0` — negative access count is a domain invariant violation [src/domain/entities/memory.entity.ts]
+- [x] [AI-Review][MEDIUM] MemoryEntity doesn't validate `linkedIds` entries as UUIDs — inconsistent with `id` validation [src/domain/entities/memory.entity.ts]
+- [x] [AI-Review][MEDIUM] MemoryEntity doesn't defensively copy mutable arrays (embedding, tags, linkedIds) — entity mutability [src/domain/entities/memory.entity.ts:47]
+- [x] [AI-Review][MEDIUM] Entity factories for signal/skill/session/identity perform zero validation — hollow factories give false safety guarantees [src/domain/entities/]
+- [x] [AI-Review][LOW] Duplicated `embeddingDimensions = 768` constant in embedding.value-object.ts and memory.entity.ts — divergence risk
+- [x] [AI-Review][LOW] Cross-platform path handling in import-isolation test only works on Windows [tests/domain/import-isolation.test.ts:36]
+- [x] [AI-Review][LOW] Infinity rejection in createRetrievalWeights gives misleading "sum to 1.0" error message [src/domain/value-objects/retrieval-weights.value-object.ts:29]
 
 ## Dev Notes
 
@@ -392,7 +403,7 @@ Claude Opus 4.6
 - All error classes defined: NyxError (abstract base) + 9 concrete errors
 - All barrel index.ts files populated with proper exports
 - Domain layer has zero external dependencies — verified by import isolation test (including node: built-ins)
-- 147 tests pass (including entity factory tests, NaN/Infinity edge cases, UUID validation, defensive copy), 0 regressions
+- 168 tests pass (including entity factory tests, NaN/Infinity edge cases, UUID validation, defensive copy), 0 regressions
 - Resolved review finding [HIGH]: Added Number.isNaN() guards to significance, retrieval-weights, and memory entity validation
 - Resolved review finding [HIGH]: Removed `Significance = number` type alias from memory.type.ts — value object `Significance` is now the sole definition
 - Resolved review finding [MEDIUM]: Removed node: exception from import isolation test
@@ -400,6 +411,14 @@ Claude Opus 4.6
 - Resolved review finding [LOW]: Added NaN/Infinity test cases for significance, retrieval-weights, and memory entity
 - Resolved review finding [LOW]: Embedding now defensively copies input array via spread
 - Resolved review finding [LOW]: MemoryEntity now validates UUID format for id field
+- Resolved review R2 [HIGH]: Embedding createEmbedding now validates individual elements with Number.isFinite() — rejects NaN/Infinity
+- Resolved review R2 [MEDIUM]: MemoryEntity now validates accessCount as non-negative integer
+- Resolved review R2 [MEDIUM]: MemoryEntity now validates all linkedIds entries as valid UUIDs
+- Resolved review R2 [MEDIUM]: MemoryEntity factory now defensively copies embedding, tags, and linkedIds arrays
+- Resolved review R2 [MEDIUM]: All entity factories now perform meaningful validation (identity: weights sum; session: type match; signal: non-empty source/reason; skill: non-empty name/path)
+- Resolved review R2 [LOW]: Exported `embeddingDimensions` from embedding.value-object.ts, imported in memory.entity.ts — single source of truth
+- Resolved review R2 [LOW]: Import isolation test now uses `path.relative()` for cross-platform path resolution
+- Resolved review R2 [LOW]: RetrievalWeights and IdentityEntity use `Number.isFinite()` — catches Infinity with accurate "finite non-negative" error message
 
 ### File List
 
@@ -454,3 +473,4 @@ Modified files:
 - 2026-03-12: Story 1.2 implemented — all domain layer types, entities, value objects, ports, and errors defined with full test coverage
 - 2026-03-12: Code review (AI) — 2 HIGH, 2 MEDIUM, 3 LOW findings. 7 action items created. Status → in-progress. Key issues: NaN validation bypass, Significance type naming collision.
 - 2026-03-12: Addressed code review findings — 7/7 items resolved (2 HIGH, 2 MEDIUM, 3 LOW). All tests pass (147 tests, 0 regressions). Status → review.
+- 2026-03-12: Code review round 2 (AI) — 1 HIGH, 4 MEDIUM, 3 LOW findings. All 8 issues fixed. 168 tests pass, 0 regressions. Status → done.
