@@ -79,21 +79,21 @@ describe("AC1: Root config files", () => {
 		expect(pkg.devDependencies).toHaveProperty("@types/bun");
 	});
 
-	test(".env.example exists with all placeholder vars", async () => {
+	test(".env.example exists with all placeholder vars and default values", async () => {
 		const content = await Bun.file(resolve(root, ".env.example")).text();
-		expect(content).toContain("ANTHROPIC_API_KEY");
-		expect(content).toContain("POSTGRES_HOST");
-		expect(content).toContain("POSTGRES_PORT");
-		expect(content).toContain("POSTGRES_DB");
-		expect(content).toContain("POSTGRES_USER");
-		expect(content).toContain("POSTGRES_PASSWORD");
-		expect(content).toContain("TELEGRAM_BOT_TOKEN");
-		expect(content).toContain("TELEGRAM_ALLOWED_CHAT_ID");
-		expect(content).toContain("WEBAPP_PORT");
-		expect(content).toContain("LOG_LEVEL");
-		expect(content).toContain("HOME_DIR");
-		expect(content).toContain("SIGNALS_DIR");
-		expect(content).toContain("LOGS_DIR");
+		expect(content).toContain("ANTHROPIC_API_KEY=your-key-here");
+		expect(content).toContain("POSTGRES_HOST=postgres");
+		expect(content).toContain("POSTGRES_PORT=5432");
+		expect(content).toContain("POSTGRES_DB=nyx");
+		expect(content).toContain("POSTGRES_USER=nyx");
+		expect(content).toContain("POSTGRES_PASSWORD=change-me");
+		expect(content).toContain("TELEGRAM_BOT_TOKEN=your-token-here");
+		expect(content).toContain("TELEGRAM_ALLOWED_CHAT_ID=your-chat-id");
+		expect(content).toContain("WEBAPP_PORT=3000");
+		expect(content).toContain("LOG_LEVEL=info");
+		expect(content).toContain("HOME_DIR=/home/nyx");
+		expect(content).toContain("SIGNALS_DIR=/app/signals");
+		expect(content).toContain("LOGS_DIR=/app/logs");
 	});
 });
 
@@ -258,10 +258,6 @@ describe("Review additions", () => {
 });
 
 describe("AC2: Test directory structure", () => {
-	test("tests/factories/index.ts exists", () => {
-		expect(exists("tests/factories/index.ts")).toBe(true);
-	});
-
 	test("required test subdirectories exist", () => {
 		expect(exists("tests/domain/entities")).toBe(true);
 		expect(exists("tests/domain/value-objects")).toBe(true);

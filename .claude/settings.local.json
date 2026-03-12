@@ -17,7 +17,9 @@
       "Bash(cd C:/Users/o01s/project/Nyx && bun add -d @types/bun)",
       "Bash(bun test:*)",
       "Bash(bun run:*)",
-      "Bash(echo \".env.local\" | git check-ignore --stdin 2>/dev/null; echo \"EXIT:$?\")"
+      "Bash(echo \".env.local\" | git check-ignore --stdin 2>/dev/null; echo \"EXIT:$?\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

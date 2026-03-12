@@ -137,6 +137,14 @@ so that all future stories have a consistent, well-structured foundation to buil
 - [x] [AI-Review-6][LOW] Change Log has 12 entries for a single scaffold story — noted for future process improvement.
 - [x] [AI-Review-6][LOW] `tsconfig.json` additional compiler options untested — added assertions for skipLibCheck, noEmit, esModuleInterop, forceConsistentCasingInFileNames, isolatedModules, verbatimModuleSyntax. [tests/scaffold.test.ts:19-29]
 
+### Review Follow-ups Round 7 (AI)
+
+- [x] [AI-Review-7][MEDIUM] `biome.json:2` `$schema` pinned to `1.9.0` while `package.json` allows `^1.9.0` semver drift — tightened devDependency to `~1.9.0` to keep schema valid across allowed installs. [package.json:15]
+- [x] [AI-Review-7][MEDIUM] `.env.example` test validates variable names but not placeholder values per Dev Notes spec — updated assertions to verify full `KEY=value` pairs (e.g., `POSTGRES_PORT=5432`). [tests/scaffold.test.ts:82]
+- [x] [AI-Review-7][LOW] `.gitignore:2` `.env*` glob unintentionally catches `.envrc` (direnv) — added `!.envrc` exception. [.gitignore:4]
+- [x] [AI-Review-7][LOW] Change Log missing commit hash `03422cb` for round 5+6 changes — updated round 6 entry. [story:517]
+- [x] [AI-Review-7][LOW] `tests/factories/index.ts` existence test redundant with content test — removed existence test (line 261-263). [tests/scaffold.test.ts:261]
+
 ## Dev Notes
 
 ### Architecture Compliance
@@ -450,6 +458,11 @@ Claude Opus 4.6
 - Resolved review-6 finding [MEDIUM]: Renamed test "mirror src structure" → "required test subdirectories exist"
 - Resolved review-6 finding [MEDIUM]: Renamed test "all required scripts" → "all tooling scripts"
 - Resolved review-6 finding [LOW]: Added 6 tsconfig compiler option assertions (skipLibCheck, noEmit, esModuleInterop, forceConsistentCasingInFileNames, isolatedModules, verbatimModuleSyntax)
+- Resolved review-7 finding [MEDIUM]: Tightened `@biomejs/biome` devDependency from `^1.9.0` to `~1.9.0` for schema URL compatibility
+- Resolved review-7 finding [MEDIUM]: `.env.example` test now validates full `KEY=value` pairs, not just variable names
+- Resolved review-7 finding [LOW]: Added `!.envrc` exception to `.gitignore` to prevent direnv file exclusion
+- Resolved review-7 finding [LOW]: Added commit hash `03422cb` to Change Log round 6 entry
+- Resolved review-7 finding [LOW]: Removed redundant `tests/factories/index.ts` existence test (covered by content test)
 
 ### File List
 
@@ -514,4 +527,6 @@ Claude Opus 4.6
 - 2026-03-12: Code review round 5 — 0 Critical, 0 High, 3 Medium, 3 Low findings. 6 action items added and auto-fixed. Key: Change Log missing commit hash for round 3/4, biome linter.rules.recommended untested, .editorconfig markdown/yaml section untested, tests/factories barrel content not validated, devDependencies untested, no bun install test.
 - 2026-03-12: Addressed code review round 5 findings — 6/6 items resolved. Key changes: biome test validates linter.rules.recommended, .editorconfig test validates markdown/yaml override section, tests/factories barrel content validated, devDependencies assertion added, bun.lock existence test added. 69 tests pass, all checks clean.
 - 2026-03-12: Code review round 6 — 1 Critical, 1 High, 3 Medium, 2 Low findings. Key: round-5 changes still uncommitted (3rd recurrence), .editorconfig test fix incomplete (missing indent_style = space), CRLF persistence despite .gitattributes, misleading test descriptions.
-- 2026-03-12: Addressed code review round 6 findings — 7/7 items resolved. All rounds 5+6 changes committed together. Added indent_style = space assertion, applied git renormalize for LF, renamed misleading test descriptions, added 6 tsconfig compiler option assertions. 69 tests pass (138 expect calls), all checks clean.
+- 2026-03-12: Addressed code review round 6 findings — 7/7 items resolved. All rounds 5+6 changes committed together (commit 03422cb). Added indent_style = space assertion, applied git renormalize for LF, renamed misleading test descriptions, added 6 tsconfig compiler option assertions. 69 tests pass (138 expect calls), all checks clean.
+- 2026-03-12: Code review round 7 — 0 Critical, 0 High, 2 Medium, 3 Low findings. Key: biome.json schema version drift risk with semver devDependency, .env.example test validates names but not placeholder values, .gitignore .env* glob catches .envrc, Change Log missing round 5+6 commit hash, redundant factories/index.ts existence test.
+- 2026-03-12: Addressed code review round 7 findings — 5/5 items resolved. Tightened biome devDependency to ~1.9.0 for schema compatibility, .env.example test now validates full key=value pairs, .gitignore adds !.envrc exception, Change Log round 6 entry updated with commit 03422cb, removed redundant factories existence test.
