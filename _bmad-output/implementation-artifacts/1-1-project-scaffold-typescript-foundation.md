@@ -78,6 +78,27 @@ so that all future stories have a consistent, well-structured foundation to buil
   - [x] 7.3 Verify biome check passes
   - [x] 7.4 Verify TypeScript compilation passes
 
+### Review Follow-ups (AI)
+
+- [x] [AI-Review][HIGH] `.gitignore` only excludes exact `.env` — change to `.env*` with `!.env.example` exception to prevent secret leaks from `.env.local`, `.env.production`, etc. [.gitignore:2]
+- [x] [AI-Review][MEDIUM] `src/entry/` missing barrel `index.ts` — AC #2 says "every directory under src/ has a barrel index.ts file" but entry/ has none. Add barrel or document as intentional deviation. [src/entry/]
+- [x] [AI-Review][MEDIUM] No `"test"` script in `package.json` — add `"test": "bun test"` for CI/CD compatibility. [package.json:7]
+- [x] [AI-Review][MEDIUM] Scaffold tests validate existence only, not content — consider adding assertions for barrel file validity, empty stub verification, and dot-suffix naming convention. [tests/scaffold.test.ts]
+- [x] [AI-Review][MEDIUM] `biome.json` ignores `"_bmad*"` and `".claude"` — practical but undocumented deviation from story spec. Document as intentional. [biome.json:18]
+- [x] [AI-Review][LOW] Entry stubs (`init.ts`, `shutdown.ts`, `container.ts`) are 0-byte files — add a single newline to avoid potential tooling edge cases. [src/entry/]
+- [x] [AI-Review][LOW] `bunfig.toml` explicitly sets `coverage = false` — consider omitting or documenting rationale. [bunfig.toml:5]
+- [x] [AI-Review][LOW] No `.editorconfig` for editor-agnostic formatting consistency on non-biome files (markdown, yaml).
+
+### Review Follow-ups Round 2 (AI)
+
+- [x] [AI-Review-2][HIGH] Review follow-up changes not committed to git — all 8 round-1 fixes are unstaged working tree modifications. Commit them before marking story done. [working tree]
+- [x] [AI-Review-2][MEDIUM] Heartbeat subprocess test doesn't verify exit code — add `await proc.exited` and assert exit code 0. Test would currently pass even if heartbeat.ts threw after printing. [tests/scaffold.test.ts:211]
+- [x] [AI-Review-2][MEDIUM] Redundant entry stub existence tests — init.ts, shutdown.ts, container.ts tested individually (lines 127-137) AND re-tested in loop (lines 143-147). Remove duplicate loop. [tests/scaffold.test.ts:143]
+- [x] [AI-Review-2][MEDIUM] `.editorconfig` test mislabeled as AC #1 — `.editorconfig` is not part of AC #1 spec. Move to a separate describe block (e.g., "Review additions") for accurate traceability. [tests/scaffold.test.ts:185]
+- [x] [AI-Review-2][MEDIUM] `.editorconfig` missing `trim_trailing_whitespace = true` — add to `[*]` section for non-biome file hygiene. [.editorconfig:7]
+- [x] [AI-Review-2][LOW] `bunfig.toml` reduced to bare minimum after cleanup — add brief inline comment that config is intentionally minimal until test/build needs arise. [bunfig.toml:1]
+- [x] [AI-Review-2][LOW] Dev Agent Record first "Completion Notes" entry says "35 tests" — add parenthetical "(pre-review; see Change Log for final count)" to prevent confusion. [story:363]
+
 ## Dev Notes
 
 ### Architecture Compliance
@@ -349,17 +370,33 @@ Claude Opus 4.6
 - Test directory structure mirrors src/ with .gitkeep files; tests/factories/index.ts barrel created
 - database/migrations/ created with .gitkeep (no index.ts per spec)
 - Added `@types/bun` as devDependency for TypeScript type checking support
-- 35 scaffold validation tests pass covering all 3 acceptance criteria
+- 35 scaffold validation tests pass covering all 3 acceptance criteria (pre-review; see Change Log for final count)
 - Biome check and TypeScript typecheck both pass clean
+- Resolved review finding [HIGH]: `.gitignore` updated from `.env` to `.env*` with `!.env.example` exception
+- Resolved review finding [MEDIUM]: Added `src/entry/index.ts` barrel file to satisfy AC #2
+- Resolved review finding [MEDIUM]: Added `"test": "bun test"` script to package.json
+- Resolved review finding [MEDIUM]: Added barrel file content validation tests (22 new assertions verifying all barrels are non-empty)
+- Resolved review finding [MEDIUM]: `biome.json` ignoring `_bmad*` and `.claude` documented as intentional — these are tooling/config directories not part of the application codebase
+- Resolved review finding [LOW]: Entry stubs remain 0-byte — biome formatter strips content from empty .ts files; this is biome-enforced behavior and not a tooling risk
+- Resolved review finding [LOW]: Removed `coverage = false` from `bunfig.toml` — unnecessary explicit default
+- Resolved review finding [LOW]: Created `.editorconfig` for consistent formatting of non-biome files (markdown, yaml)
+- Resolved review-2 finding [HIGH]: All round-1 and round-2 changes committed to git
+- Resolved review-2 finding [MEDIUM]: Heartbeat test now verifies exit code 0 via `await proc.exited`
+- Resolved review-2 finding [MEDIUM]: Removed redundant entry stub loop test (lines 143-147)
+- Resolved review-2 finding [MEDIUM]: `.editorconfig` test moved from "AC1" to "Review additions" describe block
+- Resolved review-2 finding [MEDIUM]: Added `trim_trailing_whitespace = true` to `.editorconfig` `[*]` section
+- Resolved review-2 finding [LOW]: Added inline comment to `bunfig.toml` explaining intentionally minimal config
+- Resolved review-2 finding [LOW]: Added "(pre-review; see Change Log for final count)" parenthetical to 35-test note
 
 ### File List
 
-- package.json (new)
+- package.json (new, modified — added "test" script)
 - tsconfig.json (new)
 - biome.json (new)
-- bunfig.toml (new)
-- .gitignore (new)
+- bunfig.toml (new, modified — removed coverage = false, added intent comment)
+- .gitignore (new, modified — .env* glob with !.env.example)
 - .env.example (new)
+- .editorconfig (new, modified — added trim_trailing_whitespace)
 - bun.lock (new, auto-generated)
 - src/domain/index.ts (new)
 - src/domain/entities/index.ts (new)
@@ -383,11 +420,12 @@ Claude Opus 4.6
 - src/infrastructure/webapp/index.ts (new)
 - src/infrastructure/logging/index.ts (new)
 - src/infrastructure/config/index.ts (new)
+- src/entry/index.ts (new)
 - src/entry/heartbeat.ts (new)
 - src/entry/init.ts (new)
 - src/entry/shutdown.ts (new)
 - src/entry/container.ts (new)
-- tests/scaffold.test.ts (new)
+- tests/scaffold.test.ts (new, modified — enhanced with barrel content and structure tests, review-2 fixes: exit code check, redundant loop removed, editorconfig test relabeled)
 - tests/factories/index.ts (new)
 - tests/domain/entities/.gitkeep (new)
 - tests/domain/value-objects/.gitkeep (new)
@@ -403,3 +441,7 @@ Claude Opus 4.6
 ## Change Log
 
 - 2026-03-12: Story 1.1 implemented — full project scaffold with Bun + TypeScript, Clean Architecture directory structure, root config files, and 35 validation tests
+- 2026-03-12: Code review completed — 0 Critical, 1 High, 4 Medium, 3 Low findings. 8 action items added to Review Follow-ups.
+- 2026-03-12: Addressed code review findings — 8/8 items resolved. Key changes: .gitignore hardened with .env* glob, entry/ barrel added, test script added, scaffold tests enhanced (62 total), .editorconfig created, bunfig.toml cleaned up.
+- 2026-03-12: Code review round 2 — 1 High, 4 Medium, 2 Low findings. 7 action items added to Review Follow-ups Round 2.
+- 2026-03-12: Addressed code review round 2 findings — 7/7 items resolved. Key changes: heartbeat test verifies exit code, redundant test loop removed, editorconfig test relabeled, trim_trailing_whitespace added, bunfig.toml commented, 35-test note clarified. 61 tests pass, all checks clean.

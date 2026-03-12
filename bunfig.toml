@@ -1,5 +1,3 @@
+# Intentionally minimal — expand as test/build needs arise
 [install]
 peer = false
-
-[test]
-coverage = false

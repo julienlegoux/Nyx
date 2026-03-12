@@ -5,6 +5,7 @@
 	"private": true,
 	"scripts": {
 		"start": "bun run src/entry/heartbeat.ts",
+		"test": "bun test",
 		"check": "biome check .",
 		"format": "biome format . --write",
 		"lint": "biome lint .",

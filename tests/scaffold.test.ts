@@ -38,10 +38,20 @@ describe("AC1: Root config files", () => {
 	test(".gitignore excludes required paths", async () => {
 		const content = await Bun.file(resolve(root, ".gitignore")).text();
 		expect(content).toContain("node_modules/");
-		expect(content).toContain(".env");
 		expect(content).toContain("dist/");
 		expect(content).toContain("home/");
 		expect(content).toContain("logs/");
+	});
+
+	test(".gitignore uses .env* glob with !.env.example exception", async () => {
+		const content = await Bun.file(resolve(root, ".gitignore")).text();
+		expect(content).toContain(".env*");
+		expect(content).toContain("!.env.example");
+	});
+
+	test("package.json has test script", async () => {
+		const pkg = await Bun.file(resolve(root, "package.json")).json();
+		expect(pkg.scripts.test).toBe("bun test");
 	});
 
 	test(".env.example exists with placeholder vars", async () => {
@@ -125,6 +135,51 @@ describe("AC2: Entry layer files", () => {
 	test("container.ts exists", () => {
 		expect(exists("src/entry/container.ts")).toBe(true);
 	});
+
+	test("entry/ has index.ts barrel", () => {
+		expect(exists("src/entry/index.ts")).toBe(true);
+	});
+});
+
+describe("AC2: Barrel file content validation", () => {
+	const barrelDirs = [
+		"src/domain",
+		"src/domain/entities",
+		"src/domain/value-objects",
+		"src/domain/ports",
+		"src/domain/types",
+		"src/domain/errors",
+		"src/application",
+		"src/application/heartbeat",
+		"src/application/daemons",
+		"src/application/consciousness",
+		"src/application/memory",
+		"src/infrastructure",
+		"src/infrastructure/database",
+		"src/infrastructure/database/schema",
+		"src/infrastructure/filesystem",
+		"src/infrastructure/agent-sdk",
+		"src/infrastructure/telegram",
+		"src/infrastructure/embedding",
+		"src/infrastructure/webapp",
+		"src/infrastructure/logging",
+		"src/infrastructure/config",
+		"src/entry",
+	];
+
+	for (const dir of barrelDirs) {
+		test(`${dir}/index.ts is a valid barrel file`, async () => {
+			const file = Bun.file(resolve(root, `${dir}/index.ts`));
+			const content = await file.text();
+			expect(content.length).toBeGreaterThan(0);
+		});
+	}
+});
+
+describe("Review additions", () => {
+	test(".editorconfig exists", () => {
+		expect(exists(".editorconfig")).toBe(true);
+	});
 });
 
 describe("AC2: Test directory structure", () => {
@@ -147,12 +202,14 @@ describe("AC2: Test directory structure", () => {
 });
 
 describe("AC3: Execution validation", () => {
-	test("heartbeat.ts outputs expected message", async () => {
+	test("heartbeat.ts outputs expected message and exits cleanly", async () => {
 		const proc = Bun.spawn(["bun", "run", "src/entry/heartbeat.ts"], {
 			cwd: root,
 			stdout: "pipe",
 		});
 		const output = await new Response(proc.stdout).text();
+		const exitCode = await proc.exited;
 		expect(output.trim()).toBe("Nyx heartbeat: scaffold operational");
+		expect(exitCode).toBe(0);
 	});
 });

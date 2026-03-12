@@ -14,7 +14,10 @@
       "Bash(cd C:/Users/o01s/project/Nyx && bun run format -- tests/scaffold.test.ts)",
       "Bash(cd C:/Users/o01s/project/Nyx && bun test)",
       "Bash(cd C:/Users/o01s/project/Nyx && bun run check && bun run typecheck)",
-      "Bash(cd C:/Users/o01s/project/Nyx && bun add -d @types/bun)"
+      "Bash(cd C:/Users/o01s/project/Nyx && bun add -d @types/bun)",
+      "Bash(bun test:*)",
+      "Bash(bun run:*)",
+      "Bash(echo \".env.local\" | git check-ignore --stdin 2>/dev/null; echo \"EXIT:$?\")"
     ]
   }
 }
