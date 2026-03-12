@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(mkdir -p C:/Users/cdax31/Project/Nyx/_bmad-output/brainstorming && cp C:/Users/cdax31/Project/Nyx/_bmad/core/workflows/brainstorming/template.md \"C:/Users/cdax31/Project/Nyx/_bmad-output/brainstorming/brainstorming-session-2026-03-10-1300.md\")",
-      "WebSearch"
+      "WebSearch",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs"
     ]
   }
 }
