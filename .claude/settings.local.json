@@ -19,7 +19,9 @@
       "Bash(bun run:*)",
       "Bash(echo \".env.local\" | git check-ignore --stdin 2>/dev/null; echo \"EXIT:$?\")",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(wc -l src/**/*.ts tests/**/*.ts | tail -5)",
+      "Bash(bunx biome:*)"
     ]
   }
 }
