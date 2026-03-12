@@ -201,8 +201,8 @@ FR34: Epic 7 — Nyx iterates on webapp via visual feedback
 FR35: Epic 7 — J views webapp as read-only window
 FR36: Epic 4 — Nyx reads identity doc at session start
 FR37: Epic 4 — Nyx updates identity doc
-FR38: Epic 8 — Nyx discovers skills via skill index
-FR39: Epic 8 — Nyx loads skill files on demand
+FR38: Epic 1 + Epic 8 — Nyx discovers skills via skill index (basic registry in 1.5, protection in 8.1)
+FR39: Epic 1 + Epic 8 — Nyx loads skill files on demand (basic registry in 1.5, protection in 8.1)
 FR40: Epic 8 — Nyx creates self-created skills and registers them
 FR41: Epic 8 — Nyx discovers and judges proto-skills from Pattern Detector
 FR42: Epic 8 — System skills protected from Nyx modification
@@ -219,7 +219,7 @@ FR50: Epic 1 — Logging for heartbeat, daemons, consciousness, memory
 
 ### Epic 1: Project Foundation & Nyx's Body
 J can build, run, and restart the Nyx container environment with all persistent infrastructure — Docker Compose, postgres/pgvector, volumes, logging, config, and project scaffold. The body exists.
-**FRs covered:** FR44, FR45, FR46, FR47, FR48, FR49, FR50
+**FRs covered:** FR38, FR39, FR44, FR45, FR46, FR47, FR48, FR49, FR50
 
 ### Epic 2: Memory — Nyx's Brain
 Nyx can store and retrieve memories with full metadata, multiple retrieval modes (semantic, chronological, random, by-ID, linked), and composite weighted queries. The brain functions.
@@ -247,7 +247,7 @@ Nyx authors, deploys, and iterates on its webapp using Playwright for visual fee
 
 ### Epic 8: Skills & Developmental Instincts
 Nyx discovers, loads, creates, and manages skills via the skill index. Proto-skills from Pattern Detector can be promoted, modified, or discarded. System skills remain protected. Developmental instinct skills guide self-construction without prescribing outcomes. Nyx can learn and grow.
-**FRs covered:** FR38, FR39, FR40, FR41, FR42, FR43
+**FRs covered:** FR38 (protection layer), FR39 (protection layer), FR40, FR41, FR42, FR43
 
 ## Epic 1: Project Foundation & Nyx's Body
 
@@ -396,11 +396,11 @@ So that the complete runtime environment can be built, started, and restarted wi
 **Then** all four volumes persist — no data loss (NFR10, NFR12)
 **And** the nyx container has full filesystem access, code execution, package installation, and internet access (FR44-47, NFR8-9)
 
-### Story 1.5: Seed Directory & First-Boot Mechanism
+### Story 1.5: Seed Directory, First-Boot Mechanism & Skill Registry
 
 As a developer (J),
-I want seed files for Nyx's first boot and a mechanism to copy them to persistent volumes,
-So that Nyx starts with an identity, system skill placeholders, and a webapp canvas on first launch. (FR48, FR49)
+I want seed files for Nyx's first boot, a mechanism to copy them to persistent volumes, and a working skill registry implementation,
+So that Nyx starts with an identity, system skill placeholders, a webapp canvas, and a functional skill discovery system on first launch. (FR38, FR39, FR48, FR49)
 
 **Acceptance Criteria:**
 
@@ -422,6 +422,38 @@ So that Nyx starts with an identity, system skill placeholders, and a webapp can
 **Then** existing files are NOT overwritten — seeds only copy if targets don't exist
 **And** J can update system skills by placing new files in /home/nyx/skills/system/ (FR49)
 
+**Given** src/infrastructure/filesystem/skill-registry.implementation.ts
+**When** listSkills() is called (FR38)
+**Then** it reads home/skills/skill-index.json
+**And** parses the JSON array into Skill objects (name, description, type, path, status)
+**And** returns Result<Skill[]> containing all registered skills across all tiers (system, self, proto)
+**And** skills can be filtered by type or status by the caller
+
+**Given** the skill registry
+**When** loadSkill(path: string) is called (FR39)
+**Then** it reads the markdown skill file from the resolved path (home/skills/{path})
+**And** parses the YAML frontmatter (name, description, type, version)
+**And** returns Result<string> containing the full skill content (frontmatter + body)
+**And** if the file doesn't exist, returns Result with SkillRegistryError
+
+**Given** the skill registry
+**When** registerSkill(skill: Skill) is called
+**Then** it reads the current skill-index.json
+**And** appends the new skill entry
+**And** writes the updated index using atomic write (write .tmp then rename)
+**And** returns Result<void>
+
+**Given** the skill registry
+**When** updateSkillStatus(name: string, status: SkillStatus) is called
+**Then** it updates the matching entry in skill-index.json
+**And** uses atomic write for the index update
+**And** returns Result<void>
+
+**Given** the skill index file is corrupted or missing
+**When** listSkills() is called
+**Then** it returns Result with SkillRegistryError
+**And** the error is logged — the system can still function without skill discovery (degraded but not broken)
+
 ### Story 1.6: Entry Layer — Init, Shutdown & Container Wiring
 
 As a developer (J),
@@ -441,6 +473,7 @@ So that the system boots sequentially, wires all dependencies, and runs a heartb
 **Then** it instantiates all port implementations with constructor injection
 **And** it returns a typed Container object exposing all ports
 **And** it performs no async operations and no side effects — pure wiring only
+**And** the Container type and createContainer() factory are extended by subsequent stories as new port implementations are added (e.g., Epic 2 adds EmbeddingProvider and MemoryStore, Epic 6 adds Messenger)
 
 **Given** src/entry/shutdown.ts
 **When** shutdown(container) is called
@@ -1232,27 +1265,15 @@ So that I can iterate on design based on what I actually see, not just what I im
 
 Nyx discovers, loads, creates, and manages skills via the skill index. Proto-skills from Pattern Detector can be promoted, modified, or discarded. System skills remain protected. Developmental instinct skills guide self-construction without prescribing outcomes. Nyx can learn and grow.
 
-### Story 8.1: Skill Registry — Discovery, Loading & Protection
+### Story 8.1: System Skill Protection & Consciousness Tool Restrictions
 
 As Nyx (via consciousness),
-I want to discover what skills are available to me, load them when needed, and trust that my system skills remain stable,
-So that I can build on a reliable foundation of capabilities while exploring new ones. (FR38, FR39, FR42)
+I want to trust that my system skills remain stable and protected from accidental modification,
+So that I can build on a reliable foundation of capabilities while freely managing my self-created and proto skills. (FR42)
+
+**Note:** The basic SkillRegistry implementation (listSkills, loadSkill, registerSkill, updateSkillStatus) was created in Story 1.5. This story adds system skill protection enforcement.
 
 **Acceptance Criteria:**
-
-**Given** src/infrastructure/filesystem/skill-registry.implementation.ts
-**When** listSkills() is called
-**Then** it reads home/skills/skill-index.json
-**And** parses the JSON array into Skill objects (name, description, type, path, status)
-**And** returns Result<Skill[]> containing all registered skills across all tiers (system, self, proto)
-**And** skills can be filtered by type or status by the caller
-
-**Given** the skill registry
-**When** loadSkill(path: string) is called (FR39)
-**Then** it reads the markdown skill file from the resolved path (home/skills/{path})
-**And** parses the YAML frontmatter (name, description, type, version)
-**And** returns Result<string> containing the full skill content (frontmatter + body) for injection into consciousness context
-**And** if the file doesn't exist, returns Result with SkillRegistryError
 
 **Given** system skill protection (FR42)
 **When** the Agent SDK consciousness session is configured
@@ -1265,10 +1286,11 @@ So that I can build on a reliable foundation of capabilities while exploring new
 **Then** Nyx discovers the change next time it loads the skill index or loads the skill
 **And** no container rebuild is required — hot-deployment via filesystem
 
-**Given** the skill index file is corrupted or missing
-**When** listSkills() is called
-**Then** it returns Result with SkillRegistryError
-**And** the error is logged — consciousness can still function without skill discovery (degraded but not broken)
+**Given** a consciousness session with full tool access
+**When** Nyx attempts to write to home/skills/system/ via filesystem tools
+**Then** the write is blocked by Agent SDK tool configuration
+**And** Nyx receives a clear indication that system skills are protected
+**And** writes to home/skills/self/ and home/skills/proto/ remain unrestricted
 
 ### Story 8.2: Self-Created Skills & Proto-Skill Lifecycle
 
