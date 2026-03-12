@@ -42,7 +42,7 @@ story_location: _bmad-output/implementation-artifacts
 development_status:
   # Epic 1: Project Foundation & Nyx's Body
   epic-1: in-progress
-  1-1-project-scaffold-typescript-foundation: review
+  1-1-project-scaffold-typescript-foundation: done
   1-2-domain-layer-types-entities-ports-errors: backlog
   1-3-configuration-logging: backlog
   1-4-docker-compose-container-environment: backlog

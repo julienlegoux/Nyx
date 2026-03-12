@@ -26,6 +26,12 @@ describe("AC1: Root config files", () => {
 		expect(tsconfig.compilerOptions.target).toBe("ESNext");
 		expect(tsconfig.compilerOptions.paths["@nyx/*"]).toEqual(["./src/*"]);
 		expect(tsconfig.compilerOptions.baseUrl).toBe(".");
+		expect(tsconfig.compilerOptions.skipLibCheck).toBe(true);
+		expect(tsconfig.compilerOptions.noEmit).toBe(true);
+		expect(tsconfig.compilerOptions.esModuleInterop).toBe(true);
+		expect(tsconfig.compilerOptions.forceConsistentCasingInFileNames).toBe(true);
+		expect(tsconfig.compilerOptions.isolatedModules).toBe(true);
+		expect(tsconfig.compilerOptions.verbatimModuleSyntax).toBe(true);
 		expect(tsconfig.include).toEqual(["src/**/*.ts", "tests/**/*.ts"]);
 	});
 
@@ -35,6 +41,7 @@ describe("AC1: Root config files", () => {
 		expect(biome.formatter.indentStyle).toBe("tab");
 		expect(biome.formatter.lineWidth).toBe(100);
 		expect(biome.linter.enabled).toBe(true);
+		expect(biome.linter.rules.recommended).toBe(true);
 		expect(biome.organizeImports.enabled).toBe(true);
 	});
 
@@ -56,13 +63,20 @@ describe("AC1: Root config files", () => {
 		expect(content).toContain("!.env.example");
 	});
 
-	test("package.json has all required scripts", async () => {
+	test("package.json has all tooling scripts", async () => {
 		const pkg = await Bun.file(resolve(root, "package.json")).json();
 		expect(pkg.scripts.test).toBe("bun test");
 		expect(pkg.scripts.check).toBe("biome check .");
 		expect(pkg.scripts.format).toBe("biome format . --write");
 		expect(pkg.scripts.lint).toBe("biome lint .");
 		expect(pkg.scripts.typecheck).toBe("tsc --noEmit");
+	});
+
+	test("package.json has required devDependencies", async () => {
+		const pkg = await Bun.file(resolve(root, "package.json")).json();
+		expect(pkg.devDependencies).toHaveProperty("typescript");
+		expect(pkg.devDependencies).toHaveProperty("@biomejs/biome");
+		expect(pkg.devDependencies).toHaveProperty("@types/bun");
 	});
 
 	test(".env.example exists with all placeholder vars", async () => {
@@ -218,12 +232,22 @@ describe("Review additions", () => {
 		expect(content).toContain("trim_trailing_whitespace = true");
 		expect(content).toContain("indent_style = tab");
 		expect(content).toContain("charset = utf-8");
+		// Markdown/YAML override section (biome doesn't handle these formats)
+		expect(content).toContain("[*.{md,yaml,yml}]");
+		expect(content).toContain("indent_style = space");
+		expect(content).toContain("indent_size = 2");
 	});
 
 	test("bunfig.toml is parseable and has expected settings", async () => {
 		const content = await Bun.file(resolve(root, "bunfig.toml")).text();
 		expect(content.length).toBeGreaterThan(0);
 		expect(content).toContain("peer = false");
+	});
+
+	test("tests/factories/index.ts barrel has content", async () => {
+		const file = Bun.file(resolve(root, "tests/factories/index.ts"));
+		const content = await file.text();
+		expect(content.length).toBeGreaterThan(0);
 	});
 
 	test(".gitattributes enforces LF line endings", async () => {
@@ -238,7 +262,7 @@ describe("AC2: Test directory structure", () => {
 		expect(exists("tests/factories/index.ts")).toBe(true);
 	});
 
-	test("test subdirectories mirror src structure", () => {
+	test("required test subdirectories exist", () => {
 		expect(exists("tests/domain/entities")).toBe(true);
 		expect(exists("tests/domain/value-objects")).toBe(true);
 		expect(exists("tests/application/heartbeat")).toBe(true);
@@ -262,6 +286,10 @@ describe("AC3: Execution validation", () => {
 		const exitCode = await proc.exited;
 		expect(output.trim()).toBe("Nyx heartbeat: scaffold operational");
 		expect(exitCode).toBe(0);
+	});
+
+	test("bun.lock exists (bun install succeeded)", () => {
+		expect(exists("bun.lock")).toBe(true);
 	});
 
 	test("start script points to heartbeat entry point", async () => {
