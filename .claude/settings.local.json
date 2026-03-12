@@ -4,7 +4,17 @@
       "Bash(mkdir -p C:/Users/cdax31/Project/Nyx/_bmad-output/brainstorming && cp C:/Users/cdax31/Project/Nyx/_bmad/core/workflows/brainstorming/template.md \"C:/Users/cdax31/Project/Nyx/_bmad-output/brainstorming/brainstorming-session-2026-03-10-1300.md\")",
       "WebSearch",
       "mcp__plugin_context7_context7__resolve-library-id",
-      "mcp__plugin_context7_context7__query-docs"
+      "mcp__plugin_context7_context7__query-docs",
+      "Bash(find /c/Users/o01s/project/Nyx/_bmad -name \"*.md\" -o -name \"*.yaml\" -o -name \"*.yml\" 2>/dev/null | head -30)",
+      "Bash(cd C:/Users/o01s/project/Nyx && bun install)",
+      "Bash(cd C:/Users/o01s/project/Nyx && bun run src/entry/heartbeat.ts)",
+      "Bash(cd C:/Users/o01s/project/Nyx && bun run check)",
+      "Bash(cd C:/Users/o01s/project/Nyx && bun run format)",
+      "Bash(cd C:/Users/o01s/project/Nyx && bun run typecheck)",
+      "Bash(cd C:/Users/o01s/project/Nyx && bun run format -- tests/scaffold.test.ts)",
+      "Bash(cd C:/Users/o01s/project/Nyx && bun test)",
+      "Bash(cd C:/Users/o01s/project/Nyx && bun run check && bun run typecheck)",
+      "Bash(cd C:/Users/o01s/project/Nyx && bun add -d @types/bun)"
     ]
   }
 }

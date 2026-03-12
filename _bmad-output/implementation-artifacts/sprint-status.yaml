@@ -1,0 +1,102 @@
+# generated: 2026-03-12
+# project: Nyx
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog -> in-progress: Automatically when first story is created (via create-story)
+#   - in-progress -> done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-03-12
+project: Nyx
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # Epic 1: Project Foundation & Nyx's Body
+  epic-1: in-progress
+  1-1-project-scaffold-typescript-foundation: review
+  1-2-domain-layer-types-entities-ports-errors: backlog
+  1-3-configuration-logging: backlog
+  1-4-docker-compose-container-environment: backlog
+  1-5-seed-directory-first-boot-mechanism-skill-registry: backlog
+  1-6-entry-layer-init-shutdown-container-wiring: backlog
+  epic-1-retrospective: optional
+
+  # Epic 2: Memory — Nyx's Brain
+  epic-2: backlog
+  2-1-database-connection-drizzle-schema-migrations: backlog
+  2-2-embedding-provider: backlog
+  2-3-store-memories-write-operations-use-case: backlog
+  2-4-retrieve-memories-read-operations-use-case: backlog
+  2-5-composite-weighted-retrieval: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3: Heartbeat & Autonomic System
+  epic-3: backlog
+  3-1-signal-bus-filesystem-ipc: backlog
+  3-2-consciousness-state-lock-file-management: backlog
+  3-3-session-manager-agent-sdk-integration: backlog
+  3-4-heartbeat-cycle-full-orchestration: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: Consciousness & Identity
+  epic-4: backlog
+  4-1-identity-store-read-write: backlog
+  4-2-consciousness-bootstrap-system-prompt: backlog
+  4-3-consciousness-session-lifecycle-reflection: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: Subconscious Daemons
+  epic-5: backlog
+  5-1-memory-consolidator-daemon: backlog
+  5-2-pattern-detector-daemon: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6: Communication — Nyx Speaks
+  epic-6: backlog
+  6-1-telegram-listener-message-queuing: backlog
+  6-2-telegram-messenger-outbound-messages: backlog
+  6-3-autonomous-communication-integration: backlog
+  epic-6-retrospective: optional
+
+  # Epic 7: Self-Expression Canvas
+  epic-7: backlog
+  7-1-webapp-static-server: backlog
+  7-2-webapp-authoring-deployment-skill: backlog
+  7-3-playwright-visual-feedback-loop: backlog
+  epic-7-retrospective: optional
+
+  # Epic 8: Skills & Developmental Instincts
+  epic-8: backlog
+  8-1-system-skill-protection-consciousness-tool-restrictions: backlog
+  8-2-self-created-skills-proto-skill-lifecycle: backlog
+  8-3-developmental-instinct-skills: backlog
+  epic-8-retrospective: optional
