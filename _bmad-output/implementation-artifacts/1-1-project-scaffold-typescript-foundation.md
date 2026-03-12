@@ -99,6 +99,25 @@ so that all future stories have a consistent, well-structured foundation to buil
 - [x] [AI-Review-2][LOW] `bunfig.toml` reduced to bare minimum after cleanup — add brief inline comment that config is intentionally minimal until test/build needs arise. [bunfig.toml:1]
 - [x] [AI-Review-2][LOW] Dev Agent Record first "Completion Notes" entry says "35 tests" — add parenthetical "(pre-review; see Change Log for final count)" to prevent confusion. [story:363]
 
+### Review Follow-ups Round 3 (AI)
+
+- [x] [AI-Review-3][MEDIUM] Test validates heartbeat via direct file path, not via `start` script — add test using `bun run start` or assert start script value matches tested path. [tests/scaffold.test.ts:206]
+- [x] [AI-Review-3][MEDIUM] Change Log implies commit history that doesn't exist — 5 Change Log events but only 2 git commits. Commit `a52c695` message only describes round-1 changes but silently includes round-2 fixes. Align Change Log entries with actual commit boundaries. [story:443-447]
+- [x] [AI-Review-3][MEDIUM] No negative test that `database/migrations/` has no barrel index.ts — story spec says "no index.ts — drizzle-kit generates files here." Add `expect(exists("src/infrastructure/database/migrations/index.ts")).toBe(false)`. [tests/scaffold.test.ts]
+- [x] [AI-Review-3][LOW] `.env.example` test validates only 3 of 11 variables — missing checks for POSTGRES_PORT/DB/USER/PASSWORD, TELEGRAM_ALLOWED_CHAT_ID, WEBAPP_PORT, LOG_LEVEL, HOME_DIR, SIGNALS_DIR, LOGS_DIR. [tests/scaffold.test.ts:57]
+- [x] [AI-Review-3][LOW] No assertion that entry stubs (init.ts, shutdown.ts, container.ts) are empty — tests verify existence but not emptiness per spec. [tests/scaffold.test.ts:128]
+- [x] [AI-Review-3][LOW] `tsconfig.json` test doesn't validate `module` or `target` fields — both set to "ESNext" for ESM+Bun compat but untested. [tests/scaffold.test.ts:19]
+
+### Review Follow-ups Round 4 (AI)
+
+- [x] [AI-Review-4][HIGH] Round 3 review fixes not committed to git — `tests/scaffold.test.ts` and story file are unstaged working tree modifications. Commit all round-3 changes before marking story done. [working tree]
+- [x] [AI-Review-4][MEDIUM] No `.gitattributes` for line ending enforcement — `.editorconfig` sets `end_of_line = lf` but `core.autocrlf = true` and no `.gitattributes` exists. Add `* text=auto eol=lf` to enforce LF in repo. [.gitattributes (missing)]
+- [x] [AI-Review-4][MEDIUM] `package.json` test doesn't verify all required scripts — missing assertions for `check`, `format`, `lint`, `typecheck` scripts. [tests/scaffold.test.ts:54]
+- [x] [AI-Review-4][MEDIUM] `biome.json` test doesn't validate configuration completeness — missing assertions for `indentStyle: "tab"`, `lineWidth: 100`, `organizeImports.enabled: true`. [tests/scaffold.test.ts:30]
+- [x] [AI-Review-4][MEDIUM] `tsconfig.json` test doesn't validate `baseUrl` or `include` — `baseUrl: "."` is required for path aliases to resolve; `include` array defines type coverage scope. [tests/scaffold.test.ts:19]
+- [x] [AI-Review-4][LOW] `.editorconfig` test only checks existence, not content — no validation of `root = true`, `end_of_line = lf`, `trim_trailing_whitespace`, or indent settings. [tests/scaffold.test.ts:203]
+- [x] [AI-Review-4][LOW] `bunfig.toml` test only checks existence — no validation that file is parseable or contains expected `peer = false` setting. [tests/scaffold.test.ts:36]
+
 ## Dev Notes
 
 ### Architecture Compliance
@@ -387,6 +406,19 @@ Claude Opus 4.6
 - Resolved review-2 finding [MEDIUM]: Added `trim_trailing_whitespace = true` to `.editorconfig` `[*]` section
 - Resolved review-2 finding [LOW]: Added inline comment to `bunfig.toml` explaining intentionally minimal config
 - Resolved review-2 finding [LOW]: Added "(pre-review; see Change Log for final count)" parenthetical to 35-test note
+- Resolved review-3 finding [MEDIUM]: Added test asserting start script matches heartbeat entry path
+- Resolved review-3 finding [MEDIUM]: Change Log entries aligned with actual git commit boundaries (a9d2bee, a52c695)
+- Resolved review-3 finding [MEDIUM]: Added negative test confirming database/migrations/ has no barrel index.ts
+- Resolved review-3 finding [LOW]: .env.example test expanded from 3 to 13 variable assertions (all placeholders covered)
+- Resolved review-3 finding [LOW]: Added assertion that entry stubs (init.ts, shutdown.ts, container.ts) are 0-byte empty
+- Resolved review-3 finding [LOW]: Added module and target ESNext assertions to tsconfig test
+- Resolved review-4 finding [HIGH]: All round-3 and round-4 changes will be committed together
+- Resolved review-4 finding [MEDIUM]: Created `.gitattributes` with `* text=auto eol=lf` for line ending enforcement
+- Resolved review-4 finding [MEDIUM]: Package.json test expanded to verify all 5 required scripts (test, check, format, lint, typecheck)
+- Resolved review-4 finding [MEDIUM]: Biome.json test expanded to validate indentStyle, lineWidth, and organizeImports
+- Resolved review-4 finding [MEDIUM]: Tsconfig.json test expanded to validate baseUrl and include array
+- Resolved review-4 finding [LOW]: .editorconfig test now validates content (root, end_of_line, trim_trailing_whitespace, indent_style, charset)
+- Resolved review-4 finding [LOW]: bunfig.toml test now validates content is parseable and contains peer = false
 
 ### File List
 
@@ -397,6 +429,7 @@ Claude Opus 4.6
 - .gitignore (new, modified — .env* glob with !.env.example)
 - .env.example (new)
 - .editorconfig (new, modified — added trim_trailing_whitespace)
+- .gitattributes (new — LF line ending enforcement)
 - bun.lock (new, auto-generated)
 - src/domain/index.ts (new)
 - src/domain/entities/index.ts (new)
@@ -425,7 +458,7 @@ Claude Opus 4.6
 - src/entry/init.ts (new)
 - src/entry/shutdown.ts (new)
 - src/entry/container.ts (new)
-- tests/scaffold.test.ts (new, modified — enhanced with barrel content and structure tests, review-2 fixes: exit code check, redundant loop removed, editorconfig test relabeled)
+- tests/scaffold.test.ts (new, modified — enhanced with barrel content and structure tests, review-2 fixes: exit code check, redundant loop removed, editorconfig test relabeled, review-3 fixes: start script test, migrations negative test, full .env.example coverage, entry stub emptiness, tsconfig module/target, review-4 fixes: all scripts test, biome config completeness, tsconfig baseUrl/include, editorconfig content validation, bunfig.toml content validation, .gitattributes test)
 - tests/factories/index.ts (new)
 - tests/domain/entities/.gitkeep (new)
 - tests/domain/value-objects/.gitkeep (new)
@@ -440,8 +473,10 @@ Claude Opus 4.6
 
 ## Change Log
 
-- 2026-03-12: Story 1.1 implemented — full project scaffold with Bun + TypeScript, Clean Architecture directory structure, root config files, and 35 validation tests
-- 2026-03-12: Code review completed — 0 Critical, 1 High, 4 Medium, 3 Low findings. 8 action items added to Review Follow-ups.
-- 2026-03-12: Addressed code review findings — 8/8 items resolved. Key changes: .gitignore hardened with .env* glob, entry/ barrel added, test script added, scaffold tests enhanced (62 total), .editorconfig created, bunfig.toml cleaned up.
-- 2026-03-12: Code review round 2 — 1 High, 4 Medium, 2 Low findings. 7 action items added to Review Follow-ups Round 2.
-- 2026-03-12: Addressed code review round 2 findings — 7/7 items resolved. Key changes: heartbeat test verifies exit code, redundant test loop removed, editorconfig test relabeled, trim_trailing_whitespace added, bunfig.toml commented, 35-test note clarified. 61 tests pass, all checks clean.
+- 2026-03-12: Story 1.1 implemented — full project scaffold with Bun + TypeScript, Clean Architecture directory structure, root config files, and 35 validation tests (commit a9d2bee)
+- 2026-03-12: Code review round 1 — 0 Critical, 1 High, 4 Medium, 3 Low findings. 8 action items added.
+- 2026-03-12: Code review round 2 — 1 High, 4 Medium, 2 Low findings. 7 action items added. Round 1 + round 2 fixes committed together (commit a52c695): .gitignore hardened, entry/ barrel added, test script added, scaffold tests enhanced, .editorconfig created, bunfig.toml cleaned up, heartbeat test verifies exit code, redundant test loop removed, editorconfig test relabeled, trim_trailing_whitespace added
+- 2026-03-12: Code review round 3 — 0 Critical, 0 High, 3 Medium, 3 Low findings. 6 action items added.
+- 2026-03-12: Addressed code review round 3 findings — 6/6 items resolved. Key changes: start script test added, migrations/ negative barrel test added, .env.example test expanded to all 13 vars, entry stub emptiness asserted, tsconfig module/target fields validated. 64 tests pass, all checks clean.
+- 2026-03-12: Code review round 4 — 0 Critical, 1 High, 4 Medium, 2 Low findings. 7 action items added. Key: round-3 fixes still uncommitted, no .gitattributes for line ending enforcement, test coverage gaps for biome/tsconfig/package.json config details.
+- 2026-03-12: Addressed code review round 4 findings — 7/7 items resolved. Key changes: .gitattributes created for LF enforcement, package.json test expanded to all scripts, biome.json test validates full config, tsconfig.json test validates baseUrl/include, .editorconfig test validates content, bunfig.toml test validates content, .gitattributes test added. 66 tests pass, all checks clean.
