@@ -24,5 +24,36 @@ export function createSessionEntity(params: {
 		};
 	}
 
-	return { ok: true, value: params };
+	if (!params.triggerContext) {
+		return {
+			ok: false,
+			error: new ValidationError("Session triggerContext must be non-empty"),
+		};
+	}
+
+	if (!params.config.model) {
+		return {
+			ok: false,
+			error: new ValidationError("SessionConfig model must be non-empty"),
+		};
+	}
+
+	if (!params.config.systemPrompt) {
+		return {
+			ok: false,
+			error: new ValidationError("SessionConfig systemPrompt must be non-empty"),
+		};
+	}
+
+	return {
+		ok: true,
+		value: {
+			...params,
+			startedAt: new Date(params.startedAt.getTime()),
+			config: {
+				...params.config,
+				tools: [...params.config.tools],
+			},
+		},
+	};
 }

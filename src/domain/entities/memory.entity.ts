@@ -65,6 +65,10 @@ export function createMemoryEntity(params: {
 		ok: true,
 		value: {
 			...params,
+			createdAt: new Date(params.createdAt.getTime()),
+			lastAccessed: params.lastAccessed
+				? new Date(params.lastAccessed.getTime())
+				: null,
 			embedding: [...params.embedding],
 			tags: [...params.tags],
 			linkedIds: [...params.linkedIds],

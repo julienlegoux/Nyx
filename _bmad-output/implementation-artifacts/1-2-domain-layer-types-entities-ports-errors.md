@@ -132,6 +132,28 @@ so that all layers have a shared contract to implement against.
 - [x] [AI-Review][LOW] Cross-platform path handling in import-isolation test only works on Windows [tests/domain/import-isolation.test.ts:36]
 - [x] [AI-Review][LOW] Infinity rejection in createRetrievalWeights gives misleading "sum to 1.0" error message [src/domain/value-objects/retrieval-weights.value-object.ts:29]
 
+### Review Follow-ups — Round 3 (AI)
+
+- [x] [AI-Review][HIGH] Signal entity factories return raw `params` without defensively copying `relatedMemories` array — callers retain mutable reference, violating immutability pattern established in MemoryEntity [src/domain/entities/signal.entity.ts:23,36]
+- [x] [AI-Review][HIGH] Session entity factory returns raw `params` without defensively copying mutable `config` object (contains `tools: unknown[]` array) [src/domain/entities/session.entity.ts:27]
+- [x] [AI-Review][HIGH] `createTelegramQueueItemEntity` text validation `(!params.text && params.text !== "")` is dead code — can never be true for a `string` type under strict TS; provides false safety [src/domain/entities/signal.entity.ts:29]
+- [x] [AI-Review][MEDIUM] Severe test coverage imbalance: SessionEntity has 2 tests, SkillEntity has 3, vs MemoryEntity's 16 — weakest validation + weakest tests = maximum blind spots [tests/domain/entities/session.test.ts] [tests/domain/entities/skill.test.ts]
+- [x] [AI-Review][MEDIUM] SkillEntity factory ignores `description` and `content` validation — accepts empty strings for fields that must be meaningful [src/domain/entities/skill.entity.ts:22-33]
+- [x] [AI-Review][MEDIUM] IdentityEntity factory doesn't validate `rawContent` — accepts empty string for identity markdown content [src/domain/entities/identity.entity.ts:39]
+- [x] [AI-Review][MEDIUM] Inconsistent temporal types: `Memory.createdAt` is `Date`, `WakeSignal.createdAt` and `TelegramQueueItem.receivedAt` are `string` — forces adapters to handle both representations [src/domain/types/memory.type.ts:18] [src/domain/types/signal.type.ts:6,14]
+- [x] [AI-Review][LOW] WakeSignal test uses non-UUID `"mem-1"` for relatedMemories — should use realistic UUID values [tests/domain/entities/signal.test.ts:13]
+- [x] [AI-Review][LOW] SessionEntity and SkillEntity return raw input object by reference — mutations to input after creation silently mutate the entity [src/domain/entities/session.entity.ts:27] [src/domain/entities/skill.entity.ts:35]
+- [x] [AI-Review][LOW] IdentityEntity returns params directly without copying `retrievalWeights` object — inconsistent with MemoryEntity pattern [src/domain/entities/identity.entity.ts:39]
+
+### Review Follow-ups — Round 4 (AI)
+
+- [x] [AI-Review][HIGH] `Date` objects not defensively copied in SessionEntity (`startedAt`) and MemoryEntity (`createdAt`, `lastAccessed`) — mutable reference leaks [src/domain/entities/session.entity.ts:30] [src/domain/entities/memory.entity.ts:67]
+- [x] [AI-Review][MEDIUM] SessionEntity factory missing validation for `triggerContext`, `config.model`, `config.systemPrompt` — shallowest validation of all entities [src/domain/entities/session.entity.ts:12-36]
+- [x] [AI-Review][MEDIUM] TelegramQueueItemEntity accepts NaN/Infinity/negative for `chatId` and `messageId` — inconsistent with MemoryEntity numeric guards [src/domain/entities/signal.entity.ts:32-43]
+- [x] [AI-Review][LOW] SessionEntity test asserts `.toBe(now)` confirming Date reference leak — changed to `.toEqual()` [tests/domain/entities/session.test.ts:25]
+- [x] [AI-Review][LOW] WakeSignalEntity `relatedMemories` entries not validated as UUIDs — inconsistent with MemoryEntity `linkedIds` validation [src/domain/entities/signal.entity.ts:23-29]
+- [x] [AI-Review][LOW] SessionEntity `tools` array shallow-copied — tool objects remain shared (acceptable: shape deferred to Story 3.3) [src/domain/entities/session.entity.ts:33]
+
 ## Dev Notes
 
 ### Architecture Compliance
@@ -419,6 +441,22 @@ Claude Opus 4.6
 - Resolved review R2 [LOW]: Exported `embeddingDimensions` from embedding.value-object.ts, imported in memory.entity.ts — single source of truth
 - Resolved review R2 [LOW]: Import isolation test now uses `path.relative()` for cross-platform path resolution
 - Resolved review R2 [LOW]: RetrievalWeights and IdentityEntity use `Number.isFinite()` — catches Infinity with accurate "finite non-negative" error message
+- Resolved review R3 [HIGH]: Signal entity factories now defensively copy `relatedMemories` array and return spread copies
+- Resolved review R3 [HIGH]: Session entity factory now defensively copies `config` object including `tools` array
+- Resolved review R3 [HIGH]: Removed dead `createTelegramQueueItemEntity` text validation; replaced with meaningful `from` non-empty validation
+- Resolved review R3 [MEDIUM]: Expanded SessionEntity tests from 2→10, SkillEntity tests from 3→11 — coverage now includes all types/statuses, defensive copies, validation edge cases
+- Resolved review R3 [MEDIUM]: SkillEntity factory now validates `description` and `content` are non-empty
+- Resolved review R3 [MEDIUM]: IdentityEntity factory now validates `rawContent` is non-empty
+- Resolved review R3 [MEDIUM]: Added JSDoc comment to signal.type.ts documenting temporal type design — string for JSON/IPC signals vs Date for DB-backed Memory is intentional per AC
+- Resolved review R3 [LOW]: WakeSignal test now uses realistic UUID values instead of "mem-1"
+- Resolved review R3 [LOW]: SessionEntity and SkillEntity factories return spread copies, preventing input mutation leaking
+- Resolved review R3 [LOW]: IdentityEntity factory defensively copies `retrievalWeights` object
+- Resolved review R4 [HIGH]: SessionEntity and MemoryEntity now defensively copy Date objects (startedAt, createdAt, lastAccessed) via `new Date(date.getTime())`
+- Resolved review R4 [MEDIUM]: SessionEntity factory now validates triggerContext, config.model, and config.systemPrompt are non-empty
+- Resolved review R4 [MEDIUM]: TelegramQueueItemEntity factory now validates chatId is integer and messageId is positive integer
+- Resolved review R4 [LOW]: SessionEntity test changed `.toBe(now)` to `.toEqual(now)`, added startedAt defensive copy test
+- Resolved review R4 [LOW]: WakeSignalEntity factory now validates relatedMemories entries as UUIDs
+- Resolved review R4 [LOW]: SessionEntity tools shallow-copy acknowledged — deep clone deferred to Story 3.3 when tool shape is known
 
 ### File List
 
@@ -460,13 +498,22 @@ New files:
 
 Modified files:
 - src/domain/types/memory.type.ts (removed Significance type alias to resolve naming collision)
+- src/domain/types/signal.type.ts (added temporal type rationale comment)
 - src/domain/types/index.ts
+- src/domain/entities/signal.entity.ts (defensive copies, removed dead validation, added from validation)
+- src/domain/entities/session.entity.ts (defensive copies of config and tools)
+- src/domain/entities/skill.entity.ts (added description/content validation, defensive copy)
+- src/domain/entities/identity.entity.ts (added rawContent validation, defensive copy of retrievalWeights)
 - src/domain/entities/index.ts
 - src/domain/value-objects/index.ts
 - src/domain/ports/index.ts
 - src/domain/errors/index.ts
 - src/domain/index.ts
 - tsconfig.json (added allowImportingTsExtensions)
+- tests/domain/entities/signal.test.ts (expanded: UUID values, defensive copy tests, from validation)
+- tests/domain/entities/session.test.ts (expanded from 2→10 tests: all types, defensive copies)
+- tests/domain/entities/skill.test.ts (expanded from 3→11 tests: all types/statuses, description/content validation, defensive copies)
+- tests/domain/entities/identity.test.ts (expanded: rawContent validation, defensive copy, Infinity test)
 
 ### Change Log
 
@@ -474,3 +521,6 @@ Modified files:
 - 2026-03-12: Code review (AI) — 2 HIGH, 2 MEDIUM, 3 LOW findings. 7 action items created. Status → in-progress. Key issues: NaN validation bypass, Significance type naming collision.
 - 2026-03-12: Addressed code review findings — 7/7 items resolved (2 HIGH, 2 MEDIUM, 3 LOW). All tests pass (147 tests, 0 regressions). Status → review.
 - 2026-03-12: Code review round 2 (AI) — 1 HIGH, 4 MEDIUM, 3 LOW findings. All 8 issues fixed. 168 tests pass, 0 regressions. Status → done.
+- 2026-03-13: Code review round 3 (AI) — 3 HIGH, 4 MEDIUM, 3 LOW findings. 10 action items created. Status → in-progress. Key issues: signal/session entities lack defensive copies, dead validation code, test coverage imbalance, inconsistent temporal types.
+- 2026-03-13: Addressed code review round 3 findings — 10/10 items resolved (3 HIGH, 4 MEDIUM, 3 LOW). 192 tests pass, 0 regressions. Status → review.
+- 2026-03-13: Code review round 4 (AI) — 1 HIGH, 2 MEDIUM, 3 LOW findings. All 6 issues fixed inline. 204 tests pass, 0 regressions. Status → done.

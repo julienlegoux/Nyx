@@ -25,12 +25,24 @@ export function createSkillEntity(params: {
 			error: new ValidationError("Skill name must be non-empty"),
 		};
 	}
+	if (!params.description) {
+		return {
+			ok: false,
+			error: new ValidationError("Skill description must be non-empty"),
+		};
+	}
 	if (!params.path) {
 		return {
 			ok: false,
 			error: new ValidationError("Skill path must be non-empty"),
 		};
 	}
+	if (!params.content) {
+		return {
+			ok: false,
+			error: new ValidationError("Skill content must be non-empty"),
+		};
+	}
 
-	return { ok: true, value: params };
+	return { ok: true, value: { ...params } };
 }

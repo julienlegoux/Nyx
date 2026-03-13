@@ -201,4 +201,32 @@ describe("Memory entity", () => {
 			expect(result.value.linkedIds).toHaveLength(1);
 		}
 	});
+
+	test("defensively copies createdAt Date", () => {
+		const params = validMemoryParams();
+		const originalTime = params.createdAt.getTime();
+		const result = createMemoryEntity(params);
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			params.createdAt.setTime(0);
+			expect(result.value.createdAt.getTime()).toBe(originalTime);
+			expect(result.value.createdAt).not.toBe(params.createdAt);
+		}
+	});
+
+	test("defensively copies lastAccessed Date when non-null", () => {
+		const lastAccessed = new Date();
+		const originalTime = lastAccessed.getTime();
+		const result = createMemoryEntity({
+			...validMemoryParams(),
+			lastAccessed,
+		});
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			lastAccessed.setTime(0);
+			expect(result.value.lastAccessed).not.toBeNull();
+			expect(result.value.lastAccessed!.getTime()).toBe(originalTime);
+			expect(result.value.lastAccessed).not.toBe(lastAccessed);
+		}
+	});
 });

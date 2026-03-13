@@ -13,6 +13,13 @@ export function createIdentityEntity(params: {
 	rawContent: string;
 	retrievalWeights: RetrievalWeights;
 }): Result<IdentityEntity> {
+	if (!params.rawContent) {
+		return {
+			ok: false,
+			error: new ValidationError("Identity rawContent must be non-empty"),
+		};
+	}
+
 	const { similarity, significance, recency } = params.retrievalWeights;
 	if (
 		!Number.isFinite(similarity) ||
@@ -36,5 +43,11 @@ export function createIdentityEntity(params: {
 		};
 	}
 
-	return { ok: true, value: params };
+	return {
+		ok: true,
+		value: {
+			rawContent: params.rawContent,
+			retrievalWeights: { ...params.retrievalWeights },
+		},
+	};
 }

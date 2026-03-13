@@ -3,15 +3,17 @@ import { createSkillEntity } from "@nyx/domain/entities/skill.entity.ts";
 import { SkillStatus, SkillType } from "@nyx/domain/types/skill.type.ts";
 
 describe("SkillEntity factory", () => {
+	const validParams = {
+		name: "greet",
+		description: "Greeting skill",
+		type: SkillType.System,
+		path: "/skills/greet.md",
+		status: SkillStatus.Active,
+		content: "# Greet\nSay hello",
+	};
+
 	test("creates entity from valid params", () => {
-		const result = createSkillEntity({
-			name: "greet",
-			description: "Greeting skill",
-			type: SkillType.System,
-			path: "/skills/greet.md",
-			status: SkillStatus.Active,
-			content: "# Greet\nSay hello",
-		});
+		const result = createSkillEntity({ ...validParams });
 		expect(result.ok).toBe(true);
 		if (result.ok) {
 			expect(result.value.name).toBe("greet");
@@ -20,14 +22,43 @@ describe("SkillEntity factory", () => {
 		}
 	});
 
+	test("creates entity with Self skill type", () => {
+		const result = createSkillEntity({
+			...validParams,
+			type: SkillType.Self,
+		});
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			expect(result.value.type).toBe(SkillType.Self);
+		}
+	});
+
+	test("creates entity with Proto skill type", () => {
+		const result = createSkillEntity({
+			...validParams,
+			type: SkillType.Proto,
+		});
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			expect(result.value.type).toBe(SkillType.Proto);
+		}
+	});
+
+	test("creates entity with Draft status", () => {
+		const result = createSkillEntity({
+			...validParams,
+			status: SkillStatus.Draft,
+		});
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			expect(result.value.status).toBe(SkillStatus.Draft);
+		}
+	});
+
 	test("rejects empty name", () => {
 		const result = createSkillEntity({
+			...validParams,
 			name: "",
-			description: "Greeting skill",
-			type: SkillType.System,
-			path: "/skills/greet.md",
-			status: SkillStatus.Active,
-			content: "# Greet\nSay hello",
 		});
 		expect(result.ok).toBe(false);
 		if (!result.ok) {
@@ -36,19 +67,58 @@ describe("SkillEntity factory", () => {
 		}
 	});
 
+	test("rejects empty description", () => {
+		const result = createSkillEntity({
+			...validParams,
+			description: "",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("description");
+		}
+	});
+
 	test("rejects empty path", () => {
 		const result = createSkillEntity({
-			name: "greet",
-			description: "Greeting skill",
-			type: SkillType.System,
+			...validParams,
 			path: "",
-			status: SkillStatus.Active,
-			content: "# Greet\nSay hello",
 		});
 		expect(result.ok).toBe(false);
 		if (!result.ok) {
 			expect(result.error.code).toBe("VALIDATION_ERROR");
 			expect(result.error.message).toContain("path");
+		}
+	});
+
+	test("rejects empty content", () => {
+		const result = createSkillEntity({
+			...validParams,
+			content: "",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("content");
+		}
+	});
+
+	test("returns a new object, not the input reference", () => {
+		const params = { ...validParams };
+		const result = createSkillEntity(params);
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			expect(result.value).not.toBe(params);
+		}
+	});
+
+	test("mutations to input do not affect entity", () => {
+		const params = { ...validParams };
+		const result = createSkillEntity(params);
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			params.name = "mutated";
+			expect(result.value.name).toBe("greet");
 		}
 	});
 });

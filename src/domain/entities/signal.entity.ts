@@ -6,6 +6,8 @@ export type WakeSignalEntity = WakeSignal;
 
 export type TelegramQueueItemEntity = TelegramQueueItem;
 
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export function createWakeSignalEntity(params: WakeSignal): Result<WakeSignalEntity> {
 	if (!params.source) {
 		return {
@@ -20,18 +22,53 @@ export function createWakeSignalEntity(params: WakeSignal): Result<WakeSignalEnt
 		};
 	}
 
-	return { ok: true, value: params };
+	for (const memoryId of params.relatedMemories) {
+		if (!uuidPattern.test(memoryId)) {
+			return {
+				ok: false,
+				error: new ValidationError(
+					`relatedMemories must contain valid UUIDs, got "${memoryId}"`,
+				),
+			};
+		}
+	}
+
+	return {
+		ok: true,
+		value: {
+			...params,
+			relatedMemories: [...params.relatedMemories],
+		},
+	};
 }
 
 export function createTelegramQueueItemEntity(
 	params: TelegramQueueItem,
 ): Result<TelegramQueueItemEntity> {
-	if (!params.text && params.text !== "") {
+	if (!params.from) {
 		return {
 			ok: false,
-			error: new ValidationError("TelegramQueueItem text must be a string"),
+			error: new ValidationError("TelegramQueueItem from must be non-empty"),
 		};
 	}
 
-	return { ok: true, value: params };
+	if (!Number.isInteger(params.chatId)) {
+		return {
+			ok: false,
+			error: new ValidationError(
+				`TelegramQueueItem chatId must be an integer, got ${params.chatId}`,
+			),
+		};
+	}
+
+	if (!Number.isInteger(params.messageId) || params.messageId <= 0) {
+		return {
+			ok: false,
+			error: new ValidationError(
+				`TelegramQueueItem messageId must be a positive integer, got ${params.messageId}`,
+			),
+		};
+	}
+
+	return { ok: true, value: { ...params } };
 }
