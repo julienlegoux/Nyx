@@ -154,6 +154,14 @@ so that all layers have a shared contract to implement against.
 - [x] [AI-Review][LOW] WakeSignalEntity `relatedMemories` entries not validated as UUIDs — inconsistent with MemoryEntity `linkedIds` validation [src/domain/entities/signal.entity.ts:23-29]
 - [x] [AI-Review][LOW] SessionEntity `tools` array shallow-copied — tool objects remain shared (acceptable: shape deferred to Story 3.3) [src/domain/entities/session.entity.ts:33]
 
+### Review Follow-ups — Round 5 (AI)
+
+- [x] [AI-Review][HIGH] Biome check fails with 3 errors (2 format, 1 lint) — Task 7.7 partial false claim. Fixed formatting in memory.entity.ts and signal.entity.ts, fixed noNonNullAssertion lint in memory.test.ts [src/domain/entities/memory.entity.ts:69] [src/domain/entities/signal.entity.ts:29] [tests/domain/entities/memory.test.ts:228]
+- [x] [AI-Review][HIGH] MemoryEntity embedding elements not validated for NaN/Infinity — entity validates dimension count but not individual values, bypassing Embedding VO's `Number.isFinite()` check. Added per-element validation loop [src/domain/entities/memory.entity.ts:36-44]
+- [x] [AI-Review][MEDIUM] `embeddingDimensions` not re-exported from domain barrel — forces consumers to import from internal path [src/domain/index.ts:33]
+- [x] [AI-Review][MEDIUM] Signal entity temporal fields accept empty strings — `createdAt` and `receivedAt` not validated as non-empty, inconsistent with source/reason/from validation [src/domain/entities/signal.entity.ts]
+- [x] [AI-Review][MEDIUM] SessionEntity `config.maxTurns` not validated when non-null — NaN, negative, float, Infinity all pass. Added positive integer validation [src/domain/entities/session.entity.ts:47-55]
+
 ## Dev Notes
 
 ### Architecture Compliance
@@ -457,6 +465,11 @@ Claude Opus 4.6
 - Resolved review R4 [LOW]: SessionEntity test changed `.toBe(now)` to `.toEqual(now)`, added startedAt defensive copy test
 - Resolved review R4 [LOW]: WakeSignalEntity factory now validates relatedMemories entries as UUIDs
 - Resolved review R4 [LOW]: SessionEntity tools shallow-copy acknowledged — deep clone deferred to Story 3.3 when tool shape is known
+- Resolved review R5 [HIGH]: Fixed 3 biome errors (2 format: multiline ternary/error, 1 lint: noNonNullAssertion) introduced in R4 fix commit
+- Resolved review R5 [HIGH]: MemoryEntity factory now validates individual embedding elements with Number.isFinite() — consistent with Embedding value object
+- Resolved review R5 [MEDIUM]: Added `embeddingDimensions` to domain barrel re-export
+- Resolved review R5 [MEDIUM]: WakeSignalEntity and TelegramQueueItemEntity factories now validate createdAt/receivedAt as non-empty
+- Resolved review R5 [MEDIUM]: SessionEntity factory now validates config.maxTurns as positive integer when non-null
 
 ### File List
 
@@ -524,3 +537,4 @@ Modified files:
 - 2026-03-13: Code review round 3 (AI) — 3 HIGH, 4 MEDIUM, 3 LOW findings. 10 action items created. Status → in-progress. Key issues: signal/session entities lack defensive copies, dead validation code, test coverage imbalance, inconsistent temporal types.
 - 2026-03-13: Addressed code review round 3 findings — 10/10 items resolved (3 HIGH, 4 MEDIUM, 3 LOW). 192 tests pass, 0 regressions. Status → review.
 - 2026-03-13: Code review round 4 (AI) — 1 HIGH, 2 MEDIUM, 3 LOW findings. All 6 issues fixed inline. 204 tests pass, 0 regressions. Status → done.
+- 2026-03-13: Code review round 5 (AI) — 2 HIGH, 3 MEDIUM, 2 LOW findings. All 5 HIGH+MEDIUM issues fixed inline. Key issues: biome check failing (3 errors), MemoryEntity embedding element validation gap, missing barrel export, signal temporal field validation, SessionEntity maxTurns validation. 213 tests pass, 0 regressions. Status → done.

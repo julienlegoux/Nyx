@@ -21,7 +21,8 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(wc -l src/**/*.ts tests/**/*.ts | tail -5)",
-      "Bash(bunx biome:*)"
+      "Bash(bunx biome:*)",
+      "Bash(cd C:/Users/cdax31/Project/Nyx && bun install 2>&1)"
     ]
   }
 }

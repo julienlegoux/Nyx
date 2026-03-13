@@ -203,6 +203,62 @@ describe("SessionEntity factory", () => {
 		}
 	});
 
+	test("rejects NaN maxTurns", () => {
+		const result = createSessionEntity({
+			type: SessionType.Consciousness,
+			config: { ...validConfig, maxTurns: Number.NaN },
+			startedAt: new Date(),
+			triggerContext: "wake signal",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("maxTurns");
+		}
+	});
+
+	test("rejects negative maxTurns", () => {
+		const result = createSessionEntity({
+			type: SessionType.Consciousness,
+			config: { ...validConfig, maxTurns: -5 },
+			startedAt: new Date(),
+			triggerContext: "wake signal",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("maxTurns");
+		}
+	});
+
+	test("rejects zero maxTurns", () => {
+		const result = createSessionEntity({
+			type: SessionType.Consciousness,
+			config: { ...validConfig, maxTurns: 0 },
+			startedAt: new Date(),
+			triggerContext: "wake signal",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("maxTurns");
+		}
+	});
+
+	test("rejects non-integer maxTurns", () => {
+		const result = createSessionEntity({
+			type: SessionType.Consciousness,
+			config: { ...validConfig, maxTurns: 2.5 },
+			startedAt: new Date(),
+			triggerContext: "wake signal",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("maxTurns");
+		}
+	});
+
 	test("rejects empty config.systemPrompt", () => {
 		const result = createSessionEntity({
 			type: SessionType.Consciousness,

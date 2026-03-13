@@ -21,14 +21,18 @@ export function createWakeSignalEntity(params: WakeSignal): Result<WakeSignalEnt
 			error: new ValidationError("WakeSignal reason must be non-empty"),
 		};
 	}
+	if (!params.createdAt) {
+		return {
+			ok: false,
+			error: new ValidationError("WakeSignal createdAt must be non-empty"),
+		};
+	}
 
 	for (const memoryId of params.relatedMemories) {
 		if (!uuidPattern.test(memoryId)) {
 			return {
 				ok: false,
-				error: new ValidationError(
-					`relatedMemories must contain valid UUIDs, got "${memoryId}"`,
-				),
+				error: new ValidationError(`relatedMemories must contain valid UUIDs, got "${memoryId}"`),
 			};
 		}
 	}
@@ -49,6 +53,12 @@ export function createTelegramQueueItemEntity(
 		return {
 			ok: false,
 			error: new ValidationError("TelegramQueueItem from must be non-empty"),
+		};
+	}
+	if (!params.receivedAt) {
+		return {
+			ok: false,
+			error: new ValidationError("TelegramQueueItem receivedAt must be non-empty"),
 		};
 	}
 

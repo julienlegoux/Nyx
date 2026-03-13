@@ -45,6 +45,18 @@ export function createSessionEntity(params: {
 		};
 	}
 
+	if (
+		params.config.maxTurns !== null &&
+		(!Number.isInteger(params.config.maxTurns) || params.config.maxTurns <= 0)
+	) {
+		return {
+			ok: false,
+			error: new ValidationError(
+				`SessionConfig maxTurns must be a positive integer or null, got ${params.config.maxTurns}`,
+			),
+		};
+	}
+
 	return {
 		ok: true,
 		value: {

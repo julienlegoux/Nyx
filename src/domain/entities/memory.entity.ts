@@ -34,6 +34,15 @@ export function createMemoryEntity(params: {
 		};
 	}
 
+	for (const v of params.embedding) {
+		if (!Number.isFinite(v)) {
+			return {
+				ok: false,
+				error: new ValidationError("Embedding values must be finite numbers (no NaN or Infinity)"),
+			};
+		}
+	}
+
 	if (Number.isNaN(params.significance) || params.significance < 0 || params.significance > 1) {
 		return {
 			ok: false,
@@ -66,9 +75,7 @@ export function createMemoryEntity(params: {
 		value: {
 			...params,
 			createdAt: new Date(params.createdAt.getTime()),
-			lastAccessed: params.lastAccessed
-				? new Date(params.lastAccessed.getTime())
-				: null,
+			lastAccessed: params.lastAccessed ? new Date(params.lastAccessed.getTime()) : null,
 			embedding: [...params.embedding],
 			tags: [...params.tags],
 			linkedIds: [...params.linkedIds],

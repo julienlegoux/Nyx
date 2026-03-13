@@ -171,6 +171,38 @@ describe("Memory entity", () => {
 		expect(result.ok).toBe(true);
 	});
 
+	test("rejects embedding containing NaN", () => {
+		const params = validMemoryParams();
+		params.embedding[100] = Number.NaN;
+		const result = createMemoryEntity(params);
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("finite");
+		}
+	});
+
+	test("rejects embedding containing Infinity", () => {
+		const params = validMemoryParams();
+		params.embedding[0] = Number.POSITIVE_INFINITY;
+		const result = createMemoryEntity(params);
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("finite");
+		}
+	});
+
+	test("rejects embedding containing -Infinity", () => {
+		const params = validMemoryParams();
+		params.embedding[767] = Number.NEGATIVE_INFINITY;
+		const result = createMemoryEntity(params);
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+		}
+	});
+
 	test("defensively copies embedding array", () => {
 		const params = validMemoryParams();
 		const result = createMemoryEntity(params);
@@ -225,7 +257,7 @@ describe("Memory entity", () => {
 		if (result.ok) {
 			lastAccessed.setTime(0);
 			expect(result.value.lastAccessed).not.toBeNull();
-			expect(result.value.lastAccessed!.getTime()).toBe(originalTime);
+			expect(result.value.lastAccessed?.getTime()).toBe(originalTime);
 			expect(result.value.lastAccessed).not.toBe(lastAccessed);
 		}
 	});

@@ -30,6 +30,7 @@ export {
 export {
 	type Embedding,
 	createEmbedding,
+	embeddingDimensions,
 	type Significance,
 	createSignificance,
 	createRetrievalWeights,

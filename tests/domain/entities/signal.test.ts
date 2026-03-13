@@ -113,6 +113,21 @@ describe("WakeSignalEntity factory", () => {
 		}
 	});
 
+	test("rejects empty createdAt", () => {
+		const result = createWakeSignalEntity({
+			source: "telegram",
+			reason: "new message",
+			urgency: "medium",
+			relatedMemories: [],
+			createdAt: "",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("createdAt");
+		}
+	});
+
 	test("rejects non-UUID relatedMemories entry", () => {
 		const result = createWakeSignalEntity({
 			source: "telegram",
@@ -183,6 +198,21 @@ describe("TelegramQueueItemEntity factory", () => {
 		expect(result.ok).toBe(true);
 		if (result.ok) {
 			expect(result.value).not.toBe(params);
+		}
+	});
+
+	test("rejects empty receivedAt", () => {
+		const result = createTelegramQueueItemEntity({
+			chatId: 12345,
+			messageId: 1,
+			text: "hello",
+			from: "user",
+			receivedAt: "",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("receivedAt");
 		}
 	});
 
