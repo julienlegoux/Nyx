@@ -24,21 +24,21 @@ export function createSessionEntity(params: {
 		};
 	}
 
-	if (!params.triggerContext) {
+	if (!params.triggerContext.trim()) {
 		return {
 			ok: false,
 			error: new ValidationError("Session triggerContext must be non-empty"),
 		};
 	}
 
-	if (!params.config.model) {
+	if (!params.config.model.trim()) {
 		return {
 			ok: false,
 			error: new ValidationError("SessionConfig model must be non-empty"),
 		};
 	}
 
-	if (!params.config.systemPrompt) {
+	if (!params.config.systemPrompt.trim()) {
 		return {
 			ok: false,
 			error: new ValidationError("SessionConfig systemPrompt must be non-empty"),

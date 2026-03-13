@@ -92,6 +92,18 @@ describe("IdentityEntity factory", () => {
 		}
 	});
 
+	test("rejects whitespace-only rawContent", () => {
+		const result = createIdentityEntity({
+			rawContent: "   \t\n  ",
+			retrievalWeights: { ...validWeights },
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("rawContent");
+		}
+	});
+
 	test("returns a new object, not the input reference", () => {
 		const params = {
 			rawContent: "# Nyx",

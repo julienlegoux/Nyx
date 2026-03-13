@@ -103,6 +103,42 @@ describe("SkillEntity factory", () => {
 		}
 	});
 
+	test("rejects whitespace-only name", () => {
+		const result = createSkillEntity({ ...validParams, name: "   " });
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("name");
+		}
+	});
+
+	test("rejects whitespace-only description", () => {
+		const result = createSkillEntity({ ...validParams, description: "  \t " });
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("description");
+		}
+	});
+
+	test("rejects whitespace-only path", () => {
+		const result = createSkillEntity({ ...validParams, path: "   " });
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("path");
+		}
+	});
+
+	test("rejects whitespace-only content", () => {
+		const result = createSkillEntity({ ...validParams, content: " \n " });
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("content");
+		}
+	});
+
 	test("returns a new object, not the input reference", () => {
 		const params = { ...validParams };
 		const result = createSkillEntity(params);

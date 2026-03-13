@@ -1,10 +1,10 @@
+import { uuidPattern } from "../constants.ts";
 import { ValidationError } from "../errors/domain.error.ts";
 import type { Memory, SourceType } from "../types/memory.type.ts";
 import type { Result } from "../types/result.type.ts";
 import { embeddingDimensions } from "../value-objects/embedding.value-object.ts";
 
-export type MemoryEntity = Memory;
-const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export interface MemoryEntity extends Memory {}
 
 export function createMemoryEntity(params: {
 	id: string;
@@ -22,6 +22,13 @@ export function createMemoryEntity(params: {
 		return {
 			ok: false,
 			error: new ValidationError(`id must be a valid UUID, got "${params.id}"`),
+		};
+	}
+
+	if (!params.content.trim()) {
+		return {
+			ok: false,
+			error: new ValidationError("Memory content must be non-empty"),
 		};
 	}
 
@@ -59,6 +66,15 @@ export function createMemoryEntity(params: {
 				`accessCount must be a non-negative integer, got ${params.accessCount}`,
 			),
 		};
+	}
+
+	for (const tag of params.tags) {
+		if (!tag.trim()) {
+			return {
+				ok: false,
+				error: new ValidationError("tags must not contain empty or whitespace-only strings"),
+			};
+		}
 	}
 
 	for (const linkedId of params.linkedIds) {

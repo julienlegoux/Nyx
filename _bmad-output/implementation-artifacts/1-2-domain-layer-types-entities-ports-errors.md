@@ -162,6 +162,15 @@ so that all layers have a shared contract to implement against.
 - [x] [AI-Review][MEDIUM] Signal entity temporal fields accept empty strings — `createdAt` and `receivedAt` not validated as non-empty, inconsistent with source/reason/from validation [src/domain/entities/signal.entity.ts]
 - [x] [AI-Review][MEDIUM] SessionEntity `config.maxTurns` not validated when non-null — NaN, negative, float, Infinity all pass. Added positive integer validation [src/domain/entities/session.entity.ts:47-55]
 
+### Review Follow-ups — Round 6 (AI)
+
+- [x] [AI-Review][HIGH] IdentityEntity reimplements full RetrievalWeights validation with separate `weightsTolerance` constant — delegated to `createRetrievalWeights` value object factory to eliminate divergence risk [src/domain/entities/identity.entity.ts:10-43]
+- [x] [AI-Review][MEDIUM] Whitespace-only strings pass all entity non-empty validation (`!field` only catches `""`) — added `.trim()` guards across 12+ fields in 5 entities [src/domain/entities/signal.entity.ts] [src/domain/entities/skill.entity.ts] [src/domain/entities/session.entity.ts] [src/domain/entities/identity.entity.ts]
+- [x] [AI-Review][MEDIUM] MemoryEntity `content` field has no validation — only unvalidated string field across all entities. Added non-empty trimmed check [src/domain/entities/memory.entity.ts]
+- [x] [AI-Review][MEDIUM] UUID regex `uuidPattern` duplicated in memory.entity.ts and signal.entity.ts — extracted to shared `src/domain/constants.ts`, imported by both [src/domain/constants.ts]
+- [x] [AI-Review][LOW] Memory `tags` array accepts empty/whitespace-only string elements — added per-element `.trim()` validation [src/domain/entities/memory.entity.ts]
+- [x] [AI-Review][LOW] `MemoryEntity = Memory` type alias provides no entity distinction — changed to `interface MemoryEntity extends Memory {}` for consistency with other entities [src/domain/entities/memory.entity.ts:8]
+
 ## Dev Notes
 
 ### Architecture Compliance
@@ -470,10 +479,17 @@ Claude Opus 4.6
 - Resolved review R5 [MEDIUM]: Added `embeddingDimensions` to domain barrel re-export
 - Resolved review R5 [MEDIUM]: WakeSignalEntity and TelegramQueueItemEntity factories now validate createdAt/receivedAt as non-empty
 - Resolved review R5 [MEDIUM]: SessionEntity factory now validates config.maxTurns as positive integer when non-null
+- Resolved review R6 [HIGH]: IdentityEntity delegates to createRetrievalWeights — eliminated duplicated tolerance constant and validation logic
+- Resolved review R6 [MEDIUM]: All entity string checks now use `.trim()` — whitespace-only strings correctly rejected across 12+ fields
+- Resolved review R6 [MEDIUM]: MemoryEntity factory now validates `content` is non-empty (trimmed)
+- Resolved review R6 [MEDIUM]: UUID regex extracted to shared `src/domain/constants.ts` — single source of truth for memory.entity.ts and signal.entity.ts
+- Resolved review R6 [LOW]: MemoryEntity factory now validates individual tags are non-empty (trimmed)
+- Resolved review R6 [LOW]: MemoryEntity changed from type alias to `interface MemoryEntity extends Memory {}` for consistency with other entities
 
 ### File List
 
 New files:
+- src/domain/constants.ts
 - src/domain/types/memory.type.ts
 - src/domain/types/signal.type.ts
 - src/domain/types/session.type.ts
@@ -516,7 +532,7 @@ Modified files:
 - src/domain/entities/signal.entity.ts (defensive copies, removed dead validation, added from validation)
 - src/domain/entities/session.entity.ts (defensive copies of config and tools)
 - src/domain/entities/skill.entity.ts (added description/content validation, defensive copy)
-- src/domain/entities/identity.entity.ts (added rawContent validation, defensive copy of retrievalWeights)
+- src/domain/entities/identity.entity.ts (added rawContent validation, delegates to createRetrievalWeights, .trim() guards)
 - src/domain/entities/index.ts
 - src/domain/value-objects/index.ts
 - src/domain/ports/index.ts
@@ -538,3 +554,4 @@ Modified files:
 - 2026-03-13: Addressed code review round 3 findings — 10/10 items resolved (3 HIGH, 4 MEDIUM, 3 LOW). 192 tests pass, 0 regressions. Status → review.
 - 2026-03-13: Code review round 4 (AI) — 1 HIGH, 2 MEDIUM, 3 LOW findings. All 6 issues fixed inline. 204 tests pass, 0 regressions. Status → done.
 - 2026-03-13: Code review round 5 (AI) — 2 HIGH, 3 MEDIUM, 2 LOW findings. All 5 HIGH+MEDIUM issues fixed inline. Key issues: biome check failing (3 errors), MemoryEntity embedding element validation gap, missing barrel export, signal temporal field validation, SessionEntity maxTurns validation. 213 tests pass, 0 regressions. Status → done.
+- 2026-03-13: Code review round 6 (AI) — 1 HIGH, 3 MEDIUM, 2 LOW findings. All 6 issues fixed. Key issues: IdentityEntity duplicated weights validation (delegated to VO), whitespace-only strings passing all entity checks (added .trim()), missing content/tags validation in MemoryEntity, duplicated UUID regex (extracted to constants.ts), MemoryEntity type alias (changed to interface). 231 tests pass, 0 regressions. Status → done.

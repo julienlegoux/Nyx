@@ -47,6 +47,8 @@ export type {
 	Logger,
 } from "./ports/index.ts";
 
+export { uuidPattern } from "./constants.ts";
+
 export {
 	NyxError,
 	ValidationError,

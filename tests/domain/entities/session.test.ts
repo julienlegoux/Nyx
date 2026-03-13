@@ -259,6 +259,48 @@ describe("SessionEntity factory", () => {
 		}
 	});
 
+	test("rejects whitespace-only triggerContext", () => {
+		const result = createSessionEntity({
+			type: SessionType.Consciousness,
+			config: { ...validConfig },
+			startedAt: new Date(),
+			triggerContext: "   \t  ",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("triggerContext");
+		}
+	});
+
+	test("rejects whitespace-only config.model", () => {
+		const result = createSessionEntity({
+			type: SessionType.Consciousness,
+			config: { ...validConfig, model: "   " },
+			startedAt: new Date(),
+			triggerContext: "wake signal",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("model");
+		}
+	});
+
+	test("rejects whitespace-only config.systemPrompt", () => {
+		const result = createSessionEntity({
+			type: SessionType.Consciousness,
+			config: { ...validConfig, systemPrompt: "  \n  " },
+			startedAt: new Date(),
+			triggerContext: "wake signal",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("systemPrompt");
+		}
+	});
+
 	test("rejects empty config.systemPrompt", () => {
 		const result = createSessionEntity({
 			type: SessionType.Consciousness,

@@ -1,3 +1,4 @@
+import { uuidPattern } from "../constants.ts";
 import { ValidationError } from "../errors/domain.error.ts";
 import type { Result } from "../types/result.type.ts";
 import type { TelegramQueueItem, WakeSignal } from "../types/signal.type.ts";
@@ -6,22 +7,20 @@ export type WakeSignalEntity = WakeSignal;
 
 export type TelegramQueueItemEntity = TelegramQueueItem;
 
-const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 export function createWakeSignalEntity(params: WakeSignal): Result<WakeSignalEntity> {
-	if (!params.source) {
+	if (!params.source.trim()) {
 		return {
 			ok: false,
 			error: new ValidationError("WakeSignal source must be non-empty"),
 		};
 	}
-	if (!params.reason) {
+	if (!params.reason.trim()) {
 		return {
 			ok: false,
 			error: new ValidationError("WakeSignal reason must be non-empty"),
 		};
 	}
-	if (!params.createdAt) {
+	if (!params.createdAt.trim()) {
 		return {
 			ok: false,
 			error: new ValidationError("WakeSignal createdAt must be non-empty"),
@@ -49,13 +48,13 @@ export function createWakeSignalEntity(params: WakeSignal): Result<WakeSignalEnt
 export function createTelegramQueueItemEntity(
 	params: TelegramQueueItem,
 ): Result<TelegramQueueItemEntity> {
-	if (!params.from) {
+	if (!params.from.trim()) {
 		return {
 			ok: false,
 			error: new ValidationError("TelegramQueueItem from must be non-empty"),
 		};
 	}
-	if (!params.receivedAt) {
+	if (!params.receivedAt.trim()) {
 		return {
 			ok: false,
 			error: new ValidationError("TelegramQueueItem receivedAt must be non-empty"),

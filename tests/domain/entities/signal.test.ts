@@ -128,6 +128,51 @@ describe("WakeSignalEntity factory", () => {
 		}
 	});
 
+	test("rejects whitespace-only source", () => {
+		const result = createWakeSignalEntity({
+			source: "   ",
+			reason: "new message",
+			urgency: "medium",
+			relatedMemories: [],
+			createdAt: "2026-03-12T00:00:00Z",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("source");
+		}
+	});
+
+	test("rejects whitespace-only reason", () => {
+		const result = createWakeSignalEntity({
+			source: "telegram",
+			reason: "  \t  ",
+			urgency: "medium",
+			relatedMemories: [],
+			createdAt: "2026-03-12T00:00:00Z",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("reason");
+		}
+	});
+
+	test("rejects whitespace-only createdAt", () => {
+		const result = createWakeSignalEntity({
+			source: "telegram",
+			reason: "new message",
+			urgency: "medium",
+			relatedMemories: [],
+			createdAt: "   ",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("createdAt");
+		}
+	});
+
 	test("rejects non-UUID relatedMemories entry", () => {
 		const result = createWakeSignalEntity({
 			source: "telegram",
@@ -208,6 +253,36 @@ describe("TelegramQueueItemEntity factory", () => {
 			text: "hello",
 			from: "user",
 			receivedAt: "",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("receivedAt");
+		}
+	});
+
+	test("rejects whitespace-only from", () => {
+		const result = createTelegramQueueItemEntity({
+			chatId: 12345,
+			messageId: 1,
+			text: "hello",
+			from: "   ",
+			receivedAt: "2026-03-12T00:00:00Z",
+		});
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("from");
+		}
+	});
+
+	test("rejects whitespace-only receivedAt", () => {
+		const result = createTelegramQueueItemEntity({
+			chatId: 12345,
+			messageId: 1,
+			text: "hello",
+			from: "user",
+			receivedAt: "  \t  ",
 		});
 		expect(result.ok).toBe(false);
 		if (!result.ok) {

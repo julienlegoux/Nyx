@@ -234,6 +234,50 @@ describe("Memory entity", () => {
 		}
 	});
 
+	test("rejects empty content", () => {
+		const params = validMemoryParams();
+		params.content = "";
+		const result = createMemoryEntity(params);
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("content");
+		}
+	});
+
+	test("rejects whitespace-only content", () => {
+		const params = validMemoryParams();
+		params.content = "   \t\n  ";
+		const result = createMemoryEntity(params);
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("content");
+		}
+	});
+
+	test("rejects empty string in tags", () => {
+		const params = validMemoryParams();
+		params.tags = ["valid", ""];
+		const result = createMemoryEntity(params);
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("tags");
+		}
+	});
+
+	test("rejects whitespace-only string in tags", () => {
+		const params = validMemoryParams();
+		params.tags = ["valid", "   "];
+		const result = createMemoryEntity(params);
+		expect(result.ok).toBe(false);
+		if (!result.ok) {
+			expect(result.error.code).toBe("VALIDATION_ERROR");
+			expect(result.error.message).toContain("tags");
+		}
+	});
+
 	test("defensively copies createdAt Date", () => {
 		const params = validMemoryParams();
 		const originalTime = params.createdAt.getTime();

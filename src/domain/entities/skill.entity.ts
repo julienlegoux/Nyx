@@ -19,25 +19,25 @@ export function createSkillEntity(params: {
 	status: SkillStatus;
 	content: string;
 }): Result<SkillEntity> {
-	if (!params.name) {
+	if (!params.name.trim()) {
 		return {
 			ok: false,
 			error: new ValidationError("Skill name must be non-empty"),
 		};
 	}
-	if (!params.description) {
+	if (!params.description.trim()) {
 		return {
 			ok: false,
 			error: new ValidationError("Skill description must be non-empty"),
 		};
 	}
-	if (!params.path) {
+	if (!params.path.trim()) {
 		return {
 			ok: false,
 			error: new ValidationError("Skill path must be non-empty"),
 		};
 	}
-	if (!params.content) {
+	if (!params.content.trim()) {
 		return {
 			ok: false,
 			error: new ValidationError("Skill content must be non-empty"),
