@@ -1,9 +1,17 @@
-import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { ConfigError } from "@nyx/domain/errors/index.ts";
 import { loadConfig } from "@nyx/infrastructure/config/index.ts";
+
+// Mock the database module to avoid real postgres connections
+const mockPool = { end: () => Promise.resolve() };
+const mockDb = {};
+mock.module("@nyx/infrastructure/database/index.ts", () => ({
+	connectDatabase: () => ({ db: mockDb, pool: mockPool }),
+	runMigrations: () => Promise.resolve(),
+}));
 
 // Env var keys that loadConfig() requires
 const ENV_KEYS = [
@@ -77,13 +85,15 @@ describe("init", () => {
 		expect(config.paths.home).toBe(tempDir);
 	});
 
-	it("init returns Container with all expected properties", async () => {
+	it("init returns Container with all expected properties including db and dbPool", async () => {
 		const { init } = await import("@nyx/entry/init.ts");
 		const container = await init();
 
 		expect(container).toBeDefined();
 		expect(container.config).toBeDefined();
 		expect(container.config.database.host).toBe("localhost");
+		expect(container.db).toBeDefined();
+		expect(container.dbPool).toBeDefined();
 		expect(container.logger).toBeDefined();
 		expect(container.skillRegistry).toBeDefined();
 	});

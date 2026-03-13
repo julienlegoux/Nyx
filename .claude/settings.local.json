@@ -4,7 +4,6 @@
       "WebSearch",
       "mcp__plugin_context7_context7__resolve-library-id",
       "mcp__plugin_context7_context7__query-docs",
-
       "Bash(git log:*)",
       "Bash(git diff:*)",
       "Bash(git status:*)",
@@ -30,7 +29,6 @@
       "Bash(docker compose:*)",
       "Bash(docker build:*)",
       "Bash(docker --version:*)",
-
       "Bash(cd D:/Project/Nyx && git log:*)",
       "Bash(cd D:/Project/Nyx && git diff:*)",
       "Bash(cd D:/Project/Nyx && git status:*)",
@@ -55,7 +53,6 @@
       "Bash(cd D:/Project/Nyx && head:*)",
       "Bash(cd D:/Project/Nyx && docker compose:*)",
       "Bash(cd D:/Project/Nyx && docker build:*)",
-
       "Bash(cd C:/Users/o01s/project/Nyx && git log:*)",
       "Bash(cd C:/Users/o01s/project/Nyx && git diff:*)",
       "Bash(cd C:/Users/o01s/project/Nyx && git status:*)",
@@ -79,7 +76,9 @@
       "Bash(cd C:/Users/o01s/project/Nyx && cat:*)",
       "Bash(cd C:/Users/o01s/project/Nyx && head:*)",
       "Bash(cd C:/Users/o01s/project/Nyx && docker compose:*)",
-      "Bash(cd C:/Users/o01s/project/Nyx && docker build:*)"
+      "Bash(cd C:/Users/o01s/project/Nyx && docker build:*)",
+      "Bash(cd D:/Project/Nyx && bunx drizzle-kit generate 2>&1)",
+      "Bash(cd D:/Project/Nyx && bun -e \"\nimport { connectDatabase } from '@nyx/infrastructure/database/index.ts';\nconst conn = connectDatabase\\({ host: 'localhost', port: 5432, name: 'test', user: 'test', password: 'test' }\\);\nconsole.log\\('db keys:', Object.keys\\(conn.db\\).slice\\(0, 5\\)\\);\nconsole.log\\('execute:', typeof conn.db.execute\\);\nconsole.log\\('select:', typeof conn.db.select\\);\n\")"
     ]
   }
 }

@@ -2,7 +2,9 @@ import { describe, expect, it } from "bun:test";
 import type { Logger } from "@nyx/domain/ports/index.ts";
 import { createContainer } from "@nyx/entry/container.ts";
 import type { AppConfig } from "@nyx/infrastructure/config/index.ts";
+import type { DrizzleClient } from "@nyx/infrastructure/database/index.ts";
 import { SkillRegistryImpl } from "@nyx/infrastructure/filesystem/index.ts";
+import type { Pool } from "pg";
 
 function mockLogger(): Logger {
 	return {
@@ -12,6 +14,14 @@ function mockLogger(): Logger {
 		debug: () => {},
 		child: () => mockLogger(),
 	};
+}
+
+function mockDb(): DrizzleClient {
+	return {} as unknown as DrizzleClient;
+}
+
+function mockPool(): Pool {
+	return { end: () => Promise.resolve() } as unknown as Pool;
 }
 
 function mockConfig(): AppConfig {
@@ -46,22 +56,28 @@ function mockConfig(): AppConfig {
 }
 
 describe("createContainer", () => {
-	it("returns Container with config, logger, and skillRegistry", () => {
+	it("returns Container with config, db, dbPool, logger, and skillRegistry", () => {
 		const config = mockConfig();
+		const db = mockDb();
+		const dbPool = mockPool();
 		const logger = mockLogger();
 
-		const container = createContainer({ config, logger });
+		const container = createContainer({ config, db, dbPool, logger });
 
 		expect(container.config).toBe(config);
+		expect(container.db).toBe(db);
+		expect(container.dbPool).toBe(dbPool);
 		expect(container.logger).toBe(logger);
 		expect(container.skillRegistry).toBeDefined();
 	});
 
 	it("wires SkillRegistryImpl as the skillRegistry port", () => {
 		const config = mockConfig();
+		const db = mockDb();
+		const dbPool = mockPool();
 		const logger = mockLogger();
 
-		const container = createContainer({ config, logger });
+		const container = createContainer({ config, db, dbPool, logger });
 
 		expect(container.skillRegistry).toBeInstanceOf(SkillRegistryImpl);
 	});

@@ -1,1 +1,1 @@
-// barrel export
+export { memories } from "./memory.schema.ts";
