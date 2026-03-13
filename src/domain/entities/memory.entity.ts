@@ -2,7 +2,8 @@ import { uuidPattern } from "../constants.ts";
 import { ValidationError } from "../errors/domain.error.ts";
 import type { Memory, SourceType } from "../types/memory.type.ts";
 import type { Result } from "../types/result.type.ts";
-import { embeddingDimensions } from "../value-objects/embedding.value-object.ts";
+import { createEmbedding } from "../value-objects/embedding.value-object.ts";
+import { createSignificance } from "../value-objects/significance.value-object.ts";
 
 export interface MemoryEntity extends Memory {}
 
@@ -32,32 +33,11 @@ export function createMemoryEntity(params: {
 		};
 	}
 
-	if (params.embedding.length !== embeddingDimensions) {
-		return {
-			ok: false,
-			error: new ValidationError(
-				`Embedding must have exactly ${embeddingDimensions} dimensions, got ${params.embedding.length}`,
-			),
-		};
-	}
+	const embeddingResult = createEmbedding(params.embedding);
+	if (!embeddingResult.ok) return embeddingResult;
 
-	for (const v of params.embedding) {
-		if (!Number.isFinite(v)) {
-			return {
-				ok: false,
-				error: new ValidationError("Embedding values must be finite numbers (no NaN or Infinity)"),
-			};
-		}
-	}
-
-	if (Number.isNaN(params.significance) || params.significance < 0 || params.significance > 1) {
-		return {
-			ok: false,
-			error: new ValidationError(
-				`Significance must be between 0 and 1, got ${params.significance}`,
-			),
-		};
-	}
+	const significanceResult = createSignificance(params.significance);
+	if (!significanceResult.ok) return significanceResult;
 
 	if (!Number.isInteger(params.accessCount) || params.accessCount < 0) {
 		return {

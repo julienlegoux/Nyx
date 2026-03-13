@@ -6,9 +6,9 @@ export enum SourceType {
 }
 
 export interface RetrievalWeights {
-	similarity: number;
-	significance: number;
-	recency: number;
+	readonly similarity: number;
+	readonly significance: number;
+	readonly recency: number;
 }
 
 export interface Memory {

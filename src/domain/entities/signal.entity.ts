@@ -3,9 +3,9 @@ import { ValidationError } from "../errors/domain.error.ts";
 import type { Result } from "../types/result.type.ts";
 import type { TelegramQueueItem, WakeSignal } from "../types/signal.type.ts";
 
-export type WakeSignalEntity = WakeSignal;
+export interface WakeSignalEntity extends WakeSignal {}
 
-export type TelegramQueueItemEntity = TelegramQueueItem;
+export interface TelegramQueueItemEntity extends TelegramQueueItem {}
 
 export function createWakeSignalEntity(params: WakeSignal): Result<WakeSignalEntity> {
 	if (!params.source.trim()) {

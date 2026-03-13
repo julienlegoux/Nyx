@@ -171,6 +171,15 @@ so that all layers have a shared contract to implement against.
 - [x] [AI-Review][LOW] Memory `tags` array accepts empty/whitespace-only string elements — added per-element `.trim()` validation [src/domain/entities/memory.entity.ts]
 - [x] [AI-Review][LOW] `MemoryEntity = Memory` type alias provides no entity distinction — changed to `interface MemoryEntity extends Memory {}` for consistency with other entities [src/domain/entities/memory.entity.ts:8]
 
+### Review Follow-ups — Round 7 (AI)
+
+- [x] [AI-Review][HIGH] MemoryEntity reimplements Embedding/Significance VO validation inline — delegated to `createEmbedding` and `createSignificance` factories (same pattern as IdentityEntity→createRetrievalWeights) to eliminate divergence risk [src/domain/entities/memory.entity.ts:36-40]
+- [x] [AI-Review][MEDIUM] WakeSignalEntity and TelegramQueueItemEntity use `type` alias instead of `interface` — changed to `interface...extends` for consistency with all other entities (MemoryEntity, SkillEntity, SessionEntity, IdentityEntity) [src/domain/entities/signal.entity.ts:6-8]
+- [x] [AI-Review][MEDIUM] RetrievalWeights interface properties not marked `readonly` — inconsistent with Embedding (`readonly values`) and Significance (`readonly value`). Added `readonly` to all three properties [src/domain/types/memory.type.ts:8-12]
+- [ ] [AI-Review][LOW] source-type.value-object.ts and session-type.value-object.ts are pure re-export wrappers with no validation — enums housed under value-objects/ is architecturally misleading [src/domain/value-objects/source-type.value-object.ts] [src/domain/value-objects/session-type.value-object.ts]
+- [ ] [AI-Review][LOW] Significance VO uses `Number.isNaN` + range check while Embedding/RetrievalWeights use `Number.isFinite` — divergent validation pattern (all correct, but inconsistent) [src/domain/value-objects/significance.value-object.ts:9]
+- [ ] [AI-Review][LOW] TelegramQueueItemEntity `text` is the only string field across all entities with zero validation — intentional but undocumented rationale [src/domain/entities/signal.entity.ts:48-83]
+
 ## Dev Notes
 
 ### Architecture Compliance
@@ -485,6 +494,9 @@ Claude Opus 4.6
 - Resolved review R6 [MEDIUM]: UUID regex extracted to shared `src/domain/constants.ts` — single source of truth for memory.entity.ts and signal.entity.ts
 - Resolved review R6 [LOW]: MemoryEntity factory now validates individual tags are non-empty (trimmed)
 - Resolved review R6 [LOW]: MemoryEntity changed from type alias to `interface MemoryEntity extends Memory {}` for consistency with other entities
+- Resolved review R7 [HIGH]: MemoryEntity now delegates embedding/significance validation to createEmbedding and createSignificance VOs — eliminates duplicated validation logic
+- Resolved review R7 [MEDIUM]: WakeSignalEntity and TelegramQueueItemEntity changed from type alias to interface extending base type — consistent with all other entities
+- Resolved review R7 [MEDIUM]: RetrievalWeights interface properties now marked readonly — consistent with Embedding and Significance VOs
 
 ### File List
 
@@ -555,3 +567,4 @@ Modified files:
 - 2026-03-13: Code review round 4 (AI) — 1 HIGH, 2 MEDIUM, 3 LOW findings. All 6 issues fixed inline. 204 tests pass, 0 regressions. Status → done.
 - 2026-03-13: Code review round 5 (AI) — 2 HIGH, 3 MEDIUM, 2 LOW findings. All 5 HIGH+MEDIUM issues fixed inline. Key issues: biome check failing (3 errors), MemoryEntity embedding element validation gap, missing barrel export, signal temporal field validation, SessionEntity maxTurns validation. 213 tests pass, 0 regressions. Status → done.
 - 2026-03-13: Code review round 6 (AI) — 1 HIGH, 3 MEDIUM, 2 LOW findings. All 6 issues fixed. Key issues: IdentityEntity duplicated weights validation (delegated to VO), whitespace-only strings passing all entity checks (added .trim()), missing content/tags validation in MemoryEntity, duplicated UUID regex (extracted to constants.ts), MemoryEntity type alias (changed to interface). 231 tests pass, 0 regressions. Status → done.
+- 2026-03-13: Code review round 7 (AI) — 1 HIGH, 2 MEDIUM, 3 LOW findings. 3 HIGH+MEDIUM issues fixed inline. Key issues: MemoryEntity duplicated embedding/significance VO validation (delegated to factories), signal entity type aliases (changed to interfaces), RetrievalWeights missing readonly. 231 tests pass, 0 regressions. Status → done.
