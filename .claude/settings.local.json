@@ -22,7 +22,9 @@
       "Bash(git commit:*)",
       "Bash(wc -l src/**/*.ts tests/**/*.ts | tail -5)",
       "Bash(bunx biome:*)",
-      "Bash(cd C:/Users/cdax31/Project/Nyx && bun install 2>&1)"
+      "Bash(cd C:/Users/cdax31/Project/Nyx && bun install 2>&1)",
+      "Bash(ls -la /d/Project/Nyx/_bmad/*/)",
+      "Bash(cd D:/Project/Nyx && bun add pino pino-roll)"
     ]
   }
 }

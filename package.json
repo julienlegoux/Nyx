@@ -16,5 +16,9 @@
 		"@types/bun": "^1.3.10",
 		"typescript": "^5.7.0"
 	},
-	"trustedDependencies": ["@biomejs/biome"]
+	"trustedDependencies": ["@biomejs/biome"],
+	"dependencies": {
+		"pino": "^10.3.1",
+		"pino-roll": "^4.0.0"
+	}
 }

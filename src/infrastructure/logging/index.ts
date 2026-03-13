@@ -1,1 +1,1 @@
-// barrel export
+export { PinoLogger, createLogger } from "./logger.implementation.ts";
