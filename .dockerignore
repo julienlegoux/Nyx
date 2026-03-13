@@ -1,0 +1,14 @@
+node_modules/
+.git/
+_bmad/
+_bmad-output/
+bmad-story-autopilot-workspace/
+tests/
+.env
+.env.*
+!.env.example
+docker/Dockerfile
+docker/docker-compose.yml
+.claude/
+*.md
+!src/**/*.md

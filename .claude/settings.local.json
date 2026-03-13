@@ -24,7 +24,15 @@
       "Bash(bunx biome:*)",
       "Bash(cd C:/Users/cdax31/Project/Nyx && bun install 2>&1)",
       "Bash(ls -la /d/Project/Nyx/_bmad/*/)",
-      "Bash(cd D:/Project/Nyx && bun add pino pino-roll)"
+      "Bash(cd D:/Project/Nyx && bun add pino pino-roll)",
+      "Bash(chmod +x D:/Project/Nyx/docker/entrypoint.sh)",
+      "Bash(cd D:/Project/Nyx && bash -n docker/entrypoint.sh && echo \"entrypoint.sh syntax OK\")",
+      "Bash(cd D:/Project/Nyx && docker compose -f docker/docker-compose.yml config 2>&1)",
+      "Bash(cd D:/Project/Nyx && cp .env.example .env.test-tmp && POSTGRES_PASSWORD=test WEBAPP_PORT=3000 docker compose -f docker/docker-compose.yml --env-file .env.test-tmp config > /dev/null 2>&1 && echo \"docker-compose.yml config OK\" || docker compose -f docker/docker-compose.yml --env-file .env.test-tmp config 2>&1; rm -f .env.test-tmp)",
+      "Bash(cd D:/Project/Nyx && cp .env.example .env && docker compose -f docker/docker-compose.yml config > /dev/null 2>&1 && echo \"docker-compose.yml config VALID\" || docker compose -f docker/docker-compose.yml config 2>&1)",
+      "Bash(docker --version 2>&1 || echo \"Docker not available\")",
+      "Bash(cd D:/Project/Nyx && docker build -f docker/Dockerfile -t nyx-test-build . 2>&1)",
+      "Bash(cd D:/Project/Nyx && cp .env.example .env && docker compose -f docker/docker-compose.yml config > /dev/null 2>&1 && echo \"VALID\" || echo \"INVALID\"; rm -f .env)"
     ]
   }
 }

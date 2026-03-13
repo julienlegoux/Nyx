@@ -1,0 +1,31 @@
+services:
+  nyx:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - nyx-home:/home/nyx
+      - nyx-signals:/app/signals
+      - nyx-logs:/app/logs
+    depends_on:
+      - postgres
+    env_file: ../.env
+    ports:
+      - "${WEBAPP_PORT:-3000}:3000"
+
+  postgres:
+    image: pgvector/pgvector:pg17
+    restart: unless-stopped
+    volumes:
+      - nyx-pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: nyx
+      POSTGRES_USER: nyx
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+volumes:
+  nyx-home:
+  nyx-signals:
+  nyx-logs:
+  nyx-pgdata:
