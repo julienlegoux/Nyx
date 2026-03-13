@@ -1,0 +1,44 @@
+[
+	{
+		"name": "memory-recall",
+		"description": "Query memories by semantic similarity, recency, or significance",
+		"type": "system",
+		"path": "system/memory-recall.md",
+		"status": "active"
+	},
+	{
+		"name": "memory-store",
+		"description": "Store a new memory with content, tags, and significance",
+		"type": "system",
+		"path": "system/memory-store.md",
+		"status": "active"
+	},
+	{
+		"name": "telegram-send",
+		"description": "Send a message via Telegram to J",
+		"type": "system",
+		"path": "system/telegram-send.md",
+		"status": "active"
+	},
+	{
+		"name": "webapp-deploy",
+		"description": "Deploy or update the personal webapp",
+		"type": "system",
+		"path": "system/webapp-deploy.md",
+		"status": "active"
+	},
+	{
+		"name": "identity-update",
+		"description": "Update the identity document with new self-knowledge",
+		"type": "system",
+		"path": "system/identity-update.md",
+		"status": "active"
+	},
+	{
+		"name": "reflection",
+		"description": "Reflect on recent experiences and extract insights",
+		"type": "system",
+		"path": "system/reflection.md",
+		"status": "active"
+	}
+]

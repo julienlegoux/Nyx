@@ -48,6 +48,9 @@ RUN bun install --frozen-lockfile
 COPY src/ ./src/
 COPY tsconfig.json biome.json bunfig.toml ./
 
+# Copy seed files for first-boot
+COPY seed/ ./seed/
+
 # Copy entrypoint
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

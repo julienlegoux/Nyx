@@ -12,3 +12,4 @@ docker/docker-compose.yml
 .claude/
 *.md
 !src/**/*.md
+!seed/**/*.md

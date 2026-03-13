@@ -82,11 +82,11 @@ Party Mode is interactive (not workflow.xml-based), so you must drive the conver
 
 ---
 
-## Phase 4: Code Review Cycle
+## Phase 4: Review-Fix-Verify Cycle
 
-**Goal:** Review implementation, fix issues, repeat until clean. Maximum 5 cycles.
+**Goal:** Review implementation, fix issues, and verify fixes with fresh eyes. Maximum 5 cycles.
 
-Execute this loop:
+The reviewer must never fix and validate its own work in the same pass. Each cycle has three distinct steps:
 
 ```
 review_count = 0
@@ -94,26 +94,37 @@ review_count = 0
 LOOP:
   review_count += 1
 
-  Invoke /bmad-bmm-code-review via the Skill tool, targeting the story file from Phase 1.
+  ── Step A: Review (read-only) ──────────────────────────
+  Invoke /bmad-bmm-code-review via the Skill tool, targeting the story file.
   At the first template-output checkpoint, select 'y' for YOLO mode.
 
   When the review presents findings and asks how to handle them:
-    → Select "Fix automatically" (Option 1). Always.
-    → Let the reviewer apply all fixes.
+    → Select "Create action items" (Option 2).
+    → This writes findings into the story file as [AI-Review] tasks
+      without touching any code.
 
-  After fixes are applied, assess remaining issue severity:
+  Assess the findings:
 
   IF only LOW severity issues (or no issues):
     → Story PASSES. Break.
 
-  IF CRITICAL, HIGH, or MEDIUM issues remain:
+  IF CRITICAL, HIGH, or MEDIUM issues found:
     IF review_count >= 5:
       → STOP. Summarize remaining issues by severity. Break.
-    ELSE:
-      → Continue to next review cycle. GOTO LOOP.
+
+  ── Step B: Fix ─────────────────────────────────────────
+  Invoke /bmad-bmm-dev-story via the Skill tool, targeting the same story file.
+  The dev workflow's Review Continuation Detection (Step 3) will pick up
+  the [AI-Review] action items and prioritize fixing them.
+  At the first template-output checkpoint, select 'y' for YOLO mode.
+  Let it resolve all review follow-ups and re-run validation.
+
+  ── Step C: Verify (fresh context) ──────────────────────
+  GOTO LOOP — a new review invocation starts with fresh context,
+  so the verifier has no memory of what it previously found or fixed.
 ```
 
-**Done when:** Review passes (LOW/none only) or 5 cycles exhausted.
+**Done when:** A review pass finds only LOW/no issues, or 5 cycles exhausted.
 
 ---
 
