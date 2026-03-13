@@ -171,6 +171,13 @@ so that all layers have a shared contract to implement against.
 - [x] [AI-Review][LOW] Memory `tags` array accepts empty/whitespace-only string elements — added per-element `.trim()` validation [src/domain/entities/memory.entity.ts]
 - [x] [AI-Review][LOW] `MemoryEntity = Memory` type alias provides no entity distinction — changed to `interface MemoryEntity extends Memory {}` for consistency with other entities [src/domain/entities/memory.entity.ts:8]
 
+### Review Follow-ups — Round 7 (AI)
+
+- [x] [AI-Review][MEDIUM] MemoryEntity duplicates Significance range validation inline instead of delegating to `createSignificance` value object — divergence risk; IdentityEntity already demonstrates delegation pattern with `createRetrievalWeights`. Delegated to `createSignificance` [src/domain/entities/memory.entity.ts:41-44]
+- [x] [AI-Review][MEDIUM] MemoryEntity duplicates Embedding dimension + element validation inline instead of delegating to `createEmbedding` value object — divergence risk with dimension check and NaN/Infinity loop. Delegated to `createEmbedding` [src/domain/entities/memory.entity.ts:36-39]
+- [x] [AI-Review][LOW] Signal entity types are type aliases (`type X = Y`) while MemoryEntity uses interface extension (`interface X extends Y {}`) — inconsistent entity definition pattern introduced in R6. Changed to `interface WakeSignalEntity extends WakeSignal {}` and `interface TelegramQueueItemEntity extends TelegramQueueItem {}` [src/domain/entities/signal.entity.ts:6-8]
+- [ ] [AI-Review][LOW] Entity factory params are inline type literals that duplicate entity/type definitions — `createMemoryEntity` params match `Memory`, `createSessionEntity` params match `SessionEntity`, etc. Using entity/type directly would reduce duplication [src/domain/entities/memory.entity.ts:10-20] [src/domain/entities/session.entity.ts:12-16]
+
 ## Dev Notes
 
 ### Architecture Compliance
@@ -485,6 +492,9 @@ Claude Opus 4.6
 - Resolved review R6 [MEDIUM]: UUID regex extracted to shared `src/domain/constants.ts` — single source of truth for memory.entity.ts and signal.entity.ts
 - Resolved review R6 [LOW]: MemoryEntity factory now validates individual tags are non-empty (trimmed)
 - Resolved review R6 [LOW]: MemoryEntity changed from type alias to `interface MemoryEntity extends Memory {}` for consistency with other entities
+- Resolved review R7 [MEDIUM]: MemoryEntity now delegates embedding validation to `createEmbedding` VO — eliminates duplicated dimension check and NaN/Infinity loop
+- Resolved review R7 [MEDIUM]: MemoryEntity now delegates significance validation to `createSignificance` VO — eliminates duplicated range/NaN check, consistent with IdentityEntity → createRetrievalWeights pattern
+- Resolved review R7 [LOW]: Signal entity types changed from type aliases to `interface WakeSignalEntity extends WakeSignal {}` / `interface TelegramQueueItemEntity extends TelegramQueueItem {}` — consistent with MemoryEntity interface pattern
 
 ### File List
 
@@ -555,3 +565,4 @@ Modified files:
 - 2026-03-13: Code review round 4 (AI) — 1 HIGH, 2 MEDIUM, 3 LOW findings. All 6 issues fixed inline. 204 tests pass, 0 regressions. Status → done.
 - 2026-03-13: Code review round 5 (AI) — 2 HIGH, 3 MEDIUM, 2 LOW findings. All 5 HIGH+MEDIUM issues fixed inline. Key issues: biome check failing (3 errors), MemoryEntity embedding element validation gap, missing barrel export, signal temporal field validation, SessionEntity maxTurns validation. 213 tests pass, 0 regressions. Status → done.
 - 2026-03-13: Code review round 6 (AI) — 1 HIGH, 3 MEDIUM, 2 LOW findings. All 6 issues fixed. Key issues: IdentityEntity duplicated weights validation (delegated to VO), whitespace-only strings passing all entity checks (added .trim()), missing content/tags validation in MemoryEntity, duplicated UUID regex (extracted to constants.ts), MemoryEntity type alias (changed to interface). 231 tests pass, 0 regressions. Status → done.
+- 2026-03-13: Code review round 7 (AI) — 0 HIGH, 2 MEDIUM, 2 LOW findings. 3 issues fixed (2 MEDIUM, 1 LOW). 1 LOW deferred. Key issues: MemoryEntity duplicated embedding+significance validation (delegated to createEmbedding/createSignificance VOs), signal entity type aliases inconsistent with MemoryEntity interface pattern (changed to interfaces). 231 tests pass, 0 regressions. Status → done.
