@@ -179,11 +179,11 @@ describe("AC2: Entry layer files", () => {
 		expect(exists("src/entry/index.ts")).toBe(true);
 	});
 
-	test("entry stubs (init.ts, shutdown.ts, container.ts) are empty per spec", async () => {
-		for (const stub of ["init.ts", "shutdown.ts", "container.ts"]) {
-			const file = Bun.file(resolve(root, `src/entry/${stub}`));
+	test("entry files (init.ts, shutdown.ts, container.ts) have content", async () => {
+		for (const name of ["init.ts", "shutdown.ts", "container.ts"]) {
+			const file = Bun.file(resolve(root, `src/entry/${name}`));
 			const size = file.size;
-			expect(size).toBe(0);
+			expect(size).toBeGreaterThan(0);
 		}
 	});
 });
@@ -273,15 +273,15 @@ describe("AC2: Test directory structure", () => {
 });
 
 describe("AC3: Execution validation", () => {
-	test("heartbeat.ts outputs expected message and exits cleanly", async () => {
+	test("heartbeat.ts requires environment variables to boot", async () => {
 		const proc = Bun.spawn(["bun", "run", "src/entry/heartbeat.ts"], {
 			cwd: root,
 			stdout: "pipe",
+			stderr: "pipe",
+			env: {}, // Empty env — should crash with ConfigError
 		});
-		const output = await new Response(proc.stdout).text();
 		const exitCode = await proc.exited;
-		expect(output.trim()).toBe("Nyx heartbeat: scaffold operational");
-		expect(exitCode).toBe(0);
+		expect(exitCode).not.toBe(0);
 	});
 
 	test("bun.lock exists (bun install succeeded)", () => {

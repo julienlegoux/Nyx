@@ -47,7 +47,7 @@ development_status:
   1-3-configuration-logging: done
   1-4-docker-compose-container-environment: done
   1-5-seed-directory-first-boot-mechanism-skill-registry: done
-  1-6-entry-layer-init-shutdown-container-wiring: backlog
+  1-6-entry-layer-init-shutdown-container-wiring: done
   epic-1-retrospective: optional
 
   # Epic 2: Memory — Nyx's Brain
