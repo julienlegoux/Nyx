@@ -13,6 +13,15 @@ mock.module("@nyx/infrastructure/database/index.ts", () => ({
 	runMigrations: () => Promise.resolve(),
 }));
 
+// Mock the embedding module to avoid real model loading
+const mockEmbeddingProvider = {
+	embed: () => Promise.resolve({ ok: true, value: [] }),
+};
+mock.module("@nyx/infrastructure/embedding/index.ts", () => ({
+	createEmbeddingProvider: () => Promise.resolve(mockEmbeddingProvider),
+	EmbeddingProviderImpl: class {},
+}));
+
 // Env var keys that loadConfig() requires
 const ENV_KEYS = [
 	"ANTHROPIC_API_KEY",
@@ -94,7 +103,9 @@ describe("init", () => {
 		expect(container.config.database.host).toBe("localhost");
 		expect(container.db).toBeDefined();
 		expect(container.dbPool).toBeDefined();
+		expect(container.embeddingProvider).toBeDefined();
 		expect(container.logger).toBeDefined();
+		expect(container.memoryStore).toBeDefined();
 		expect(container.skillRegistry).toBeDefined();
 	});
 

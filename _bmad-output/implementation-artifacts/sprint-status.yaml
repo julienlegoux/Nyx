@@ -53,8 +53,8 @@ development_status:
   # Epic 2: Memory — Nyx's Brain
   epic-2: in-progress
   2-1-database-connection-drizzle-schema-migrations: done
-  2-2-embedding-provider: backlog
-  2-3-store-memories-write-operations-use-case: backlog
+  2-2-embedding-provider: done
+  2-3-store-memories-write-operations-use-case: done
   2-4-retrieve-memories-read-operations-use-case: backlog
   2-5-composite-weighted-retrieval: backlog
   epic-2-retrospective: optional

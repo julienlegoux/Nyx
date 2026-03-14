@@ -22,6 +22,7 @@
 	},
 	"trustedDependencies": ["@biomejs/biome"],
 	"dependencies": {
+		"@huggingface/transformers": "^3.8.1",
 		"drizzle-orm": "^0.45.1",
 		"pg": "^8.20.0",
 		"pino": "^10.3.1",

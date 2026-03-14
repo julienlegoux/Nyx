@@ -10,6 +10,7 @@ export interface MemoryStore {
 	queryLinked(memoryId: string): Promise<Result<Memory[]>>;
 	updateSignificance(id: string, significance: number): Promise<Result<void>>;
 	updateTags(id: string, tags: string[]): Promise<Result<void>>;
+	linkMemories(id: string, linkedIds: string[]): Promise<Result<void>>;
 	compositeQuery(
 		embedding: number[],
 		weights: RetrievalWeights,

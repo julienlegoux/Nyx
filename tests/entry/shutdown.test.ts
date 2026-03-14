@@ -25,7 +25,9 @@ function mockContainer(logger: Logger): Container {
 		config: {} as Container["config"],
 		db: {} as unknown as DrizzleClient,
 		dbPool: { end: mock(() => Promise.resolve()) } as unknown as Pool,
+		embeddingProvider: { embed: () => Promise.resolve({ ok: true as const, value: [] }) },
 		logger,
+		memoryStore: {} as Container["memoryStore"],
 		skillRegistry: {} as Container["skillRegistry"],
 	};
 }

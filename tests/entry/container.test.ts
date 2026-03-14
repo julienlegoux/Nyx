@@ -1,8 +1,9 @@
 import { describe, expect, it } from "bun:test";
-import type { Logger } from "@nyx/domain/ports/index.ts";
+import type { EmbeddingProvider, Logger } from "@nyx/domain/ports/index.ts";
 import { createContainer } from "@nyx/entry/container.ts";
 import type { AppConfig } from "@nyx/infrastructure/config/index.ts";
 import type { DrizzleClient } from "@nyx/infrastructure/database/index.ts";
+import { MemoryStoreImpl } from "@nyx/infrastructure/database/index.ts";
 import { SkillRegistryImpl } from "@nyx/infrastructure/filesystem/index.ts";
 import type { Pool } from "pg";
 
@@ -22,6 +23,12 @@ function mockDb(): DrizzleClient {
 
 function mockPool(): Pool {
 	return { end: () => Promise.resolve() } as unknown as Pool;
+}
+
+function mockEmbeddingProvider(): EmbeddingProvider {
+	return {
+		embed: () => Promise.resolve({ ok: true as const, value: [] }),
+	};
 }
 
 function mockConfig(): AppConfig {
@@ -56,18 +63,21 @@ function mockConfig(): AppConfig {
 }
 
 describe("createContainer", () => {
-	it("returns Container with config, db, dbPool, logger, and skillRegistry", () => {
+	it("returns Container with all expected properties", () => {
 		const config = mockConfig();
 		const db = mockDb();
 		const dbPool = mockPool();
+		const embeddingProvider = mockEmbeddingProvider();
 		const logger = mockLogger();
 
-		const container = createContainer({ config, db, dbPool, logger });
+		const container = createContainer({ config, db, dbPool, embeddingProvider, logger });
 
 		expect(container.config).toBe(config);
 		expect(container.db).toBe(db);
 		expect(container.dbPool).toBe(dbPool);
+		expect(container.embeddingProvider).toBe(embeddingProvider);
 		expect(container.logger).toBe(logger);
+		expect(container.memoryStore).toBeDefined();
 		expect(container.skillRegistry).toBeDefined();
 	});
 
@@ -75,10 +85,23 @@ describe("createContainer", () => {
 		const config = mockConfig();
 		const db = mockDb();
 		const dbPool = mockPool();
+		const embeddingProvider = mockEmbeddingProvider();
 		const logger = mockLogger();
 
-		const container = createContainer({ config, db, dbPool, logger });
+		const container = createContainer({ config, db, dbPool, embeddingProvider, logger });
 
 		expect(container.skillRegistry).toBeInstanceOf(SkillRegistryImpl);
+	});
+
+	it("wires MemoryStoreImpl as the memoryStore port", () => {
+		const config = mockConfig();
+		const db = mockDb();
+		const dbPool = mockPool();
+		const embeddingProvider = mockEmbeddingProvider();
+		const logger = mockLogger();
+
+		const container = createContainer({ config, db, dbPool, embeddingProvider, logger });
+
+		expect(container.memoryStore).toBeInstanceOf(MemoryStoreImpl);
 	});
 });
